@@ -1,0 +1,30 @@
+[
+  {
+    "request": {
+      "schema_version": "1.1",
+      "decision_type": "support.triage",
+      "release": "support.triage@1.1.0",
+      "idempotency_key": "replay_001",
+      "state": {
+        "egress_denied": true
+      },
+      "evidence": [],
+      "constraints": {}
+    },
+    "expected_disposition": "deny"
+  },
+  {
+    "request": {
+      "schema_version": "1.1",
+      "decision_type": "support.triage",
+      "release": "support.triage@1.1.0",
+      "idempotency_key": "replay_002",
+      "state": {
+        "egress_denied": false
+      },
+      "evidence": [],
+      "constraints": {}
+    },
+    "expected_disposition": "review"
+  }
+]

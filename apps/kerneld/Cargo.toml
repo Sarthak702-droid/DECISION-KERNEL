@@ -1,0 +1,16 @@
+[package]
+name = "kerneld"
+version = "0.1.0"
+edition.workspace = true
+
+[dependencies]
+kernel-core = { path = "../../crates/kernel-core" }
+kernel-compiler = { path = "../../crates/kernel-compiler" }
+kernel-provider = { path = "../../crates/kernel-provider" }
+kernel-runtime = { path = "../../crates/kernel-runtime" }
+serde_json.workspace = true
+tokio.workspace = true
+axum.workspace = true
+sqlx.workspace = true
+sha2.workspace = true
+serde.workspace = true

@@ -1,0 +1,13 @@
+[package]
+name = "kernel-provider"
+version = "0.1.0"
+edition.workspace = true
+
+[dependencies]
+kernel-core = { path = "../kernel-core" }
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+reqwest.workspace = true
+tokio.workspace = true
+

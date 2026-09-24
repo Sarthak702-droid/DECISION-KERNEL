@@ -1,0 +1,18 @@
+[workspace]
+resolver = "2"
+members = ["crates/kernel-core", "crates/kernel-compiler", "crates/kernel-provider", "crates/kernel-runtime", "crates/kernel-evaluation", "apps/kerneld", "apps/kernelctl", "apps/kernel-worker"]
+
+[workspace.package]
+edition = "2024"
+license = "Apache-2.0"
+
+[workspace.dependencies]
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = "=1.0.150"
+tokio = { version = "=1.45.0", features = ["full"] }
+thiserror = "=2.0.18"
+sha2 = "=0.10.9"
+reqwest = { version = "=0.12.15", default-features = false, features = ["json", "rustls-tls"] }
+tracing = "=0.1.41"
+axum = { version = "=0.8.4", features = ["json"] }
+sqlx = { version = "=0.8.6", default-features = false, features = ["runtime-tokio", "tls-rustls", "postgres", "json"] }

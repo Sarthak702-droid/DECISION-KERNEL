@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.1",
+  "product_id": "test-product",
+  "decision_type": "support.triage",
+  "release": "support.triage@1.1.0",
+  "idempotency_key": "hard-deny-test-1",
+  "mode": "evaluate",
+  "execution_profile": "fast",
+  "state": {"egress_denied": true},
+  "evidence_refs": [],
+  "constraints": {"deadline_ms": 1000, "max_billable_attempts": 1, "max_cost_nano_usd": 1000000}
+}

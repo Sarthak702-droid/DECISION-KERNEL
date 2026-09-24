@@ -1,0 +1,22 @@
+{
+  "schema_version": "kernel-evaluation/v1",
+  "task_id": "support.triage",
+  "release_hash_sha256": "e9852a0f729d188c542938dc437e474ea481b48615cc03178567db77daff3e9f",
+  "provider_id": "example-provider",
+  "model_id": "example-model",
+  "adapter_version": "compatible-v1",
+  "cases": [
+    {
+      "id": "fixture-1", "group_id": "ticket-1", "partition": "test", "slice": "english",
+      "output_id": "urgent", "label_source": "reviewer", "rights_cleared": true,
+      "expected": {"kind":"binary","proposition":"needs_urgent_review","value":true,"probability_true":null,"probability_provenance":null},
+      "predicted": {"kind":"binary","proposition":"needs_urgent_review","value":true,"probability_true":null,"probability_provenance":null}
+    },
+    {
+      "id": "fixture-2", "group_id": "ticket-2", "partition": "test", "slice": "english",
+      "output_id": "urgent", "label_source": "reviewer", "rights_cleared": true,
+      "expected": {"kind":"binary","proposition":"needs_urgent_review","value":false,"probability_true":null,"probability_provenance":null},
+      "predicted": {"kind":"not_evaluated","reason":"provider_unavailable"}
+    }
+  ]
+}
