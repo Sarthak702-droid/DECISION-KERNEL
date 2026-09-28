@@ -3,10 +3,10 @@
 [![Rust](https://img.shields.io/badge/rust-stable-brightgreen.svg?logo=rust)](https://www.rust-lang.org/)
 [![License](https://img.shields.io/badge/license-Apache%202.0%20%2F%20MIT-blue.svg)](#license)
 [![Architecture](https://img.shields.io/badge/architecture-Decision--Only%20v1.1-purple.svg)](#core-principles)
-[![Conformance](https://img.shields.io/badge/release%20gates-DK--R01%20..%20DK--R12%20PASS-success.svg)](#release-acceptance-gates)
-[![Deterministic Core](https://img.shields.io/badge/pure%20core%20p95-%3C%200.35%20ms-informational.svg)](#performance-acceptance-benchmarks)
+[![Verification](https://img.shields.io/badge/release%20gates-in%20progress-yellow.svg)](#release-acceptance-gates)
+[![Deterministic Core](https://img.shields.io/badge/pure%20core%20p95-0.2105%20ms-informational.svg)](#performance-acceptance-benchmarks)
 
-A production-grade, Rust-first, headless decision engine based on the **Decision-Only Architecture v1.1**.
+A Rust-first, headless decision engine based on the **Decision-Only Architecture v1.1**. Local policy checks pass; the database and live-provider release checks described below remain open.
 
 Applications provide authenticated facts, permitted evidence, and a published decision specification. External intelligence APIs (TypeSafe System One, schema-constrained LLMs) supply bounded semantic judgments when needed. The Rust kernel validates those judgments, combines them with deterministic rules and policy constraints, and returns an immutable, typed decision receipt. The consuming application alone executes business actions.
 
@@ -112,28 +112,28 @@ Decisions strictly follow a deterministic 5-step precedence hierarchy:
 
 ## Release Acceptance Gates (PRD Conformance)
 
-All 12 release acceptance gates from PRD v1.1 are implemented and verified:
+The local checks below verify selected behaviors. The full release gates remain open where they require PostgreSQL, live providers, concurrency, or end-to-end measurements. See the [test report](DECISION_ENGINE_TEST_REPORT.md) for commands, results, and limitations.
 
 | Gate | Requirement | Verification Evidence | Status |
 | :--- | :--- | :--- | :---: |
-| **DK-R01 / Rust boundary** | Pure Rust implementation across daemon, CLI, runtime, and adapters. Zero Node.js, Python, or UI framework dependencies. | `cargo test --workspace` compiles clean without non-Rust runtimes. | **PASS** |
-| **DK-R02 / Compiler** | Rejects DAG cycles, dangling edges, unknown node fields, and invalid types before publication. | Unit tests in `kernel-compiler` verify cycle detection and rejection. | **PASS** |
-| **DK-R03 / Authority** | Hard deny strictly wins over missing evidence, high model confidence, or reviewer overrides. | `hard_deny_dominates_and_is_idempotent` runtime test passes. | **PASS** |
-| **DK-R04 / Fast path** | Fully resolved rules make 0 provider calls; fast profile never exceeds 1 billable attempt. | `deterministic_answer_uses_zero_provider_calls` passes with 0 attempts. | **PASS** |
-| **DK-R05 / Idempotency** | Concurrent equivalent requests share one operation; different request digests return HTTP 409. | `PostgresStore::claim` returns `Claim::Existing` or `Claim::Conflict`. | **PASS** |
-| **DK-R06 / Accounting** | Atomic budget reservations prevent double-spend; timeouts preserve uncertain holds for operator audit. | Transactional budget hold with row locking in PostgreSQL test. | **PASS** |
-| **DK-R07 / Receipt** | Commit failure never acknowledges durable success; crash recovery preserves attempts and releases. | Two-phase receipt commit with release revocation checks in transaction. | **PASS** |
-| **DK-R08 / Uncertainty** | Discrete labels retain null probabilities; invalid distributions or fabricated numbers fail closed. | `normalize_system_one` and `normalize_compatible` reject fabricated probabilities. | **PASS** |
-| **DK-R09 / Scope** | Cross-tenant evidence, prediction cache, replay, and token auth fail closed. | `postgres_receipts_cache_and_budget_are_scoped` multi-tenant test passes. | **PASS** |
-| **DK-R10 / Behavior** | Pinned release replay is 100% reproducible for deterministic policy via `kernelctl replay`. | `kernelctl replay` verifies recorded decision sets identically. | **PASS** |
-| **DK-R11 / Portability** | Two genuinely independent semantic providers pass canonical task contracts. | `SystemOneProvider` and `OpenAiCompatibleProvider` conformance verified. | **PASS** |
-| **DK-R12 / Performance** | Measured pure core p95 < 1 ms; measured audited DB p95 < 50 ms. | `kernelctl bench` automated benchmark report passes all thresholds. | **PASS** |
+| **DK-R01 / Rust boundary** | Pure Rust implementation across daemon, CLI, runtime, and adapters. Zero Node.js, Python, or UI framework dependencies. | Offline Rust workspace build and tests passed. | **Local check passed** |
+| **DK-R02 / Compiler** | Rejects DAG cycles, dangling edges, unknown node fields, and invalid types before publication. | Unit tests cover cycles, missing producers, and unknown fields. | **Partially verified** |
+| **DK-R03 / Authority** | Hard deny strictly wins over missing evidence, high model confidence, or reviewer overrides. | `hard_deny_dominates_and_is_idempotent` passed. | **Partially verified** |
+| **DK-R04 / Fast path** | Fully resolved rules make 0 provider calls; fast profile never exceeds 1 billable attempt. | `deterministic_answer_uses_zero_provider_calls` passed with 0 attempts. | **Partially verified** |
+| **DK-R05 / Idempotency** | Concurrent equivalent requests share one operation; different request digests return HTTP 409. | PostgreSQL integration and concurrent HTTP behavior were not run in this check. | **Pending** |
+| **DK-R06 / Accounting** | Atomic budget reservations prevent double-spend; timeouts preserve uncertain holds for operator audit. | PostgreSQL integration was not run in this check. | **Pending** |
+| **DK-R07 / Receipt** | Commit failure never acknowledges durable success; crash recovery preserves attempts and releases. | Database failure and recovery paths were not run in this check. | **Pending** |
+| **DK-R08 / Uncertainty** | Discrete labels retain null probabilities; invalid distributions or fabricated numbers fail closed. | Core and provider validation unit tests passed. | **Local check passed** |
+| **DK-R09 / Scope** | Cross-tenant evidence, prediction cache, replay, and token auth fail closed. | PostgreSQL integration was skipped because `KERNEL_TEST_DATABASE_URL` was unset. | **Pending** |
+| **DK-R10 / Behavior** | Pinned release replay is 100% reproducible for deterministic policy via `kernelctl replay`. | Example fixture replay matched 2/2 dispositions. | **Partially verified** |
+| **DK-R11 / Portability** | Two genuinely independent semantic providers pass canonical task contracts. | Adapter unit tests passed; no live provider conformance run. | **Pending** |
+| **DK-R12 / Performance** | Measured pure core p95 < 1 ms; measured audited DB p95 < 50 ms. | Pure core p95 was 0.2105 ms; audited DB benchmark was not run. | **Partially verified** |
 
 ---
 
 ## Performance Acceptance Benchmarks (Section 17)
 
-Benchmarks run via `kernelctl bench` on a warm bounded fixture (4 KiB state, 64 nodes, 5,000 iterations):
+The 28 September 2026 local benchmark used the three-node example pack for 5,000 pure in-memory iterations. The audited PostgreSQL path requires `DATABASE_URL` and was not measured in that run:
 
 ```sh
 kernelctl bench packs/examples/support-triage.json
@@ -147,17 +147,10 @@ Nodes: 3, Edges: 0
 
 [Lane A: Pure Deterministic Core]
 Iterations:        5000
-Throughput:        4108.7 ops/sec
-Latency p50:       0.2292 ms
-Latency p95:       0.3135 ms  (Target: < 1.0 ms -> PASS)
-Latency p99:       0.4582 ms
-
-[Lane A: Audited No-Model Request (PostgreSQL DB + Receipt Commit)]
-Iterations:        200
-Throughput:        198.9 req/sec
-Latency p50:       4.34 ms
-Latency p95:       7.43 ms  (Target: < 50.0 ms -> PASS)
-Latency p99:       11.54 ms
+Throughput:        6391.2 ops/sec
+Latency p50:       0.1459 ms
+Latency p95:       0.2105 ms  (Target: < 1.0 ms -> PASS)
+Latency p99:       0.3365 ms
 
 === Benchmark Completed Successfully ===
 ```
