@@ -857,6 +857,13 @@ dependencies = [
 name = "kernel-worker"
 version = "0.1.0"
 dependencies = [
+ "kernel-compiler",
+ "kernel-core",
+ "kernel-provider",
+ "kernel-runtime",
+ "reqwest",
+ "serde_json",
+ "sha2",
  "sqlx",
  "tokio",
 ]

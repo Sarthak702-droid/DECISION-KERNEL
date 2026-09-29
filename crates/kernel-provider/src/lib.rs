@@ -28,6 +28,16 @@ pub struct ProviderIdentity {
     pub provider_id: String,
     pub model_id: String,
     pub adapter_version: String,
+    pub allowed_returned_models: Vec<String>,
+}
+impl ProviderIdentity {
+    pub fn accepts_returned_model(&self, model: &str) -> bool {
+        model == self.model_id
+            || self
+                .allowed_returned_models
+                .iter()
+                .any(|allowed| allowed == model)
+    }
 }
 #[derive(Debug, Clone)]
 pub struct ProviderCapabilities {
@@ -63,6 +73,7 @@ impl IntelligenceProvider for FixtureProvider {
             provider_id: self.response.provider_id.clone(),
             model_id: self.response.model_id.clone(),
             adapter_version: "fixture-v1".into(),
+            allowed_returned_models: vec![],
         }
     }
     fn capabilities(&self) -> ProviderCapabilities {
@@ -128,9 +139,29 @@ impl OpenAiCompatibleProvider {
                 provider_id,
                 model_id,
                 adapter_version: "compatible-v1".into(),
+                allowed_returned_models: vec![],
             },
             max_output_tokens,
         })
+    }
+    pub fn with_allowed_returned_models(
+        mut self,
+        models: Vec<String>,
+    ) -> Result<Self, ProviderError> {
+        if models.len() > 4
+            || models
+                .iter()
+                .any(|model| model.is_empty() || model == &self.identity.model_id)
+            || models
+                .iter()
+                .collect::<std::collections::BTreeSet<_>>()
+                .len()
+                != models.len()
+        {
+            return Err(ProviderError::Invalid);
+        }
+        self.identity.allowed_returned_models = models;
+        Ok(self)
     }
 }
 fn normalize_compatible(
@@ -142,7 +173,7 @@ fn normalize_compatible(
         .get("model")
         .and_then(|v| v.as_str())
         .ok_or(ProviderError::Invalid)?;
-    if model != identity.model_id {
+    if !identity.accepts_returned_model(model) {
         return Err(ProviderError::Invalid);
     }
     let choices = value
@@ -285,6 +316,7 @@ impl SystemOneProvider {
                 provider_id,
                 model_id,
                 adapter_version: "system-one-v1".into(),
+                allowed_returned_models: vec![],
             },
             max_output_tokens,
         })
@@ -300,7 +332,7 @@ pub fn normalize_system_one(
         .get("model")
         .and_then(|v| v.as_str())
         .ok_or(ProviderError::Invalid)?;
-    if model != identity.model_id {
+    if !identity.accepts_returned_model(model) {
         return Err(ProviderError::Invalid);
     }
     let predictions = value
@@ -484,6 +516,7 @@ mod tests {
             provider_id: "p".into(),
             model_id: "m".into(),
             adapter_version: "compatible-v1".into(),
+            allowed_returned_models: vec![],
         }
     }
     fn system_one_id() -> ProviderIdentity {
@@ -491,6 +524,7 @@ mod tests {
             provider_id: "jev-provider".into(),
             model_id: "jev-1.13".into(),
             adapter_version: "system-one-v1".into(),
+            allowed_returned_models: vec![],
         }
     }
     fn outer(content: &str, finish: &str) -> Vec<u8> {
@@ -514,6 +548,21 @@ mod tests {
         assert!(normalize_compatible(&outer(content, "stop"), &identity()).is_err());
         let discrete = r#"{"answers":{"q":{"kind":"binary","proposition":"urgent","value":true,"probability_true":null}}}"#;
         assert!(normalize_compatible(&outer(discrete, "length"), &identity()).is_err());
+    }
+    #[test]
+    fn router_model_requires_explicit_allowlist() {
+        let content = r#"{"answers":{"q":{"kind":"binary","proposition":"urgent","value":true,"probability_true":null}}}"#;
+        let bytes = serde_json::to_vec(&serde_json::json!({
+            "model": "served-model",
+            "choices": [{"finish_reason":"stop","message":{"content":content}}]
+        }))
+        .unwrap();
+        assert!(normalize_compatible(&bytes, &identity()).is_err());
+        let mut routed = identity();
+        routed.allowed_returned_models = vec!["served-model".into()];
+        let response = normalize_compatible(&bytes, &routed).unwrap();
+        assert_eq!(response.model_id, "served-model");
+        assert!(!routed.accepts_returned_model("different-model"));
     }
     #[test]
     fn system_one_normalizes_choice_and_noul_without_probability() {
@@ -552,7 +601,11 @@ mod tests {
         ));
         assert!(matches!(
             res.answers.get("urgent"),
-            Some(Answer::Binary { value: Some(true), probability_true: None, .. })
+            Some(Answer::Binary {
+                value: Some(true),
+                probability_true: None,
+                ..
+            })
         ));
     }
     #[test]

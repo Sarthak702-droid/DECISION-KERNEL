@@ -6,7 +6,7 @@
 [![Verification](https://img.shields.io/badge/release%20gates-in%20progress-yellow.svg)](#release-acceptance-gates)
 [![Deterministic Core](https://img.shields.io/badge/pure%20core%20p95-0.2105%20ms-informational.svg)](#performance-acceptance-benchmarks)
 
-A Rust-first, headless decision engine based on the **Decision-Only Architecture v1.1**. Local policy checks pass; the database and live-provider release checks described below remain open.
+A Rust-first, headless decision engine based on the **Decision-Only Architecture v1.1**. Local policy and PostgreSQL integration checks pass. Production release gates in the v2.0 PRD remain open; see [the current gate report](DECISION_ENGINE_TEST_REPORT.md).
 
 Applications provide authenticated facts, permitted evidence, and a published decision specification. External intelligence APIs (TypeSafe System One, schema-constrained LLMs) supply bounded semantic judgments when needed. The Rust kernel validates those judgments, combines them with deterministic rules and policy constraints, and returns an immutable, typed decision receipt. The consuming application alone executes business actions.
 
@@ -89,7 +89,7 @@ The workspace strictly conforms to the pure Rust boundary mandate (**DK-R01**):
 | [`kernel-evaluation`](crates/kernel-evaluation) | `crates/kernel-evaluation` | Offline evaluation engine: group-leakage validation, partition-aware testing (dev/calibration/test), Brier scores, calibration diagnostics, and qualification criteria verification. |
 | [`kerneld`](apps/kerneld) | `apps/kerneld` | Headless Axum HTTP daemon exposing decisions, evidence intake, reviews, outcomes, usage, and Kubernetes health probes. |
 | [`kernelctl`](apps/kernelctl) | `apps/kernelctl` | Administrative CLI: migrations, pack validation, compilation, release publication, service token lifecycle, qualification publishing, charge reconciliation, replay, and benchmarks. |
-| [`kernel-worker`](apps/kernel-worker) | `apps/kernel-worker` | Conservative background reconciliation loop marking stale dispatch intents uncertain while retaining budget holds and resetting retryable claims. |
+| [`kernel-worker`](apps/kernel-worker) | `apps/kernel-worker` | PostgreSQL-backed deferred jobs, leased transactional outbox delivery, and conservative provider-attempt recovery. |
 
 ---
 
@@ -120,20 +120,20 @@ The local checks below verify selected behaviors. The full release gates remain 
 | **DK-R02 / Compiler** | Rejects DAG cycles, dangling edges, unknown node fields, and invalid types before publication. | Unit tests cover cycles, missing producers, and unknown fields. | **Partially verified** |
 | **DK-R03 / Authority** | Hard deny strictly wins over missing evidence, high model confidence, or reviewer overrides. | `hard_deny_dominates_and_is_idempotent` passed. | **Partially verified** |
 | **DK-R04 / Fast path** | Fully resolved rules make 0 provider calls; fast profile never exceeds 1 billable attempt. | `deterministic_answer_uses_zero_provider_calls` passed with 0 attempts. | **Partially verified** |
-| **DK-R05 / Idempotency** | Concurrent equivalent requests share one operation; different request digests return HTTP 409. | PostgreSQL integration and concurrent HTTP behavior were not run in this check. | **Pending** |
-| **DK-R06 / Accounting** | Atomic budget reservations prevent double-spend; timeouts preserve uncertain holds for operator audit. | PostgreSQL integration was not run in this check. | **Pending** |
+| **DK-R05 / Idempotency** | Concurrent equivalent requests share one operation; different request digests return HTTP 409. | PostgreSQL integration passed; concurrent HTTP behavior remains untested. | **Partially verified** |
+| **DK-R06 / Accounting** | Atomic budget reservations prevent double-spend; timeouts preserve uncertain holds for operator audit. | PostgreSQL integration passed; crash and timeout paths remain untested. | **Partially verified** |
 | **DK-R07 / Receipt** | Commit failure never acknowledges durable success; crash recovery preserves attempts and releases. | Database failure and recovery paths were not run in this check. | **Pending** |
 | **DK-R08 / Uncertainty** | Discrete labels retain null probabilities; invalid distributions or fabricated numbers fail closed. | Core and provider validation unit tests passed. | **Local check passed** |
-| **DK-R09 / Scope** | Cross-tenant evidence, prediction cache, replay, and token auth fail closed. | PostgreSQL integration was skipped because `KERNEL_TEST_DATABASE_URL` was unset. | **Pending** |
+| **DK-R09 / Scope** | Cross-tenant evidence, prediction cache, replay, and token auth fail closed. | PostgreSQL integration passed; HTTP token isolation remains untested. | **Partially verified** |
 | **DK-R10 / Behavior** | Pinned release replay is 100% reproducible for deterministic policy via `kernelctl replay`. | Example fixture replay matched 2/2 dispositions. | **Partially verified** |
 | **DK-R11 / Portability** | Two genuinely independent semantic providers pass canonical task contracts. | Adapter unit tests passed; no live provider conformance run. | **Pending** |
-| **DK-R12 / Performance** | Measured pure core p95 < 1 ms; measured audited DB p95 < 50 ms. | Pure core p95 was 0.2105 ms; audited DB benchmark was not run. | **Partially verified** |
+| **DK-R12 / Performance** | Measured pure core p95 < 1 ms; measured audited DB p95 < 50 ms. | On 29 September 2026, pure core p95 was 0.2207 ms and audited DB p95 was 3.59 ms on a local test container. | **Local check passed** |
 
 ---
 
 ## Performance Acceptance Benchmarks (Section 17)
 
-The 28 September 2026 local benchmark used the three-node example pack for 5,000 pure in-memory iterations. The audited PostgreSQL path requires `DATABASE_URL` and was not measured in that run:
+The 29 September 2026 local benchmark used the three-node example pack for 5,000 pure in-memory iterations and 200 audited PostgreSQL requests:
 
 ```sh
 kernelctl bench packs/examples/support-triage.json
@@ -147,10 +147,17 @@ Nodes: 3, Edges: 0
 
 [Lane A: Pure Deterministic Core]
 Iterations:        5000
-Throughput:        6391.2 ops/sec
-Latency p50:       0.1459 ms
-Latency p95:       0.2105 ms  (Target: < 1.0 ms -> PASS)
-Latency p99:       0.3365 ms
+Throughput:        6592.4 ops/sec
+Latency p50:       0.1405 ms
+Latency p95:       0.2207 ms  (Target: < 1.0 ms -> PASS)
+Latency p99:       0.2905 ms
+
+[Lane A: Audited No-Model Request (DB + Receipt Commit)]
+Iterations:        200
+Throughput:        293.1 req/sec
+Latency p50:       3.18 ms
+Latency p95:       3.59 ms  (Target: < 50.0 ms -> PASS)
+Latency p99:       4.07 ms
 
 === Benchmark Completed Successfully ===
 ```
@@ -163,6 +170,9 @@ All endpoints require `Authorization: Bearer <kernel-service-token>` matching an
 
 ### 1. Execute Decision
 `POST /v1/decisions`
+
+Set `release` to `"active"` to resolve the scoped release pointer for this request. The receipt records the resolved `decision_type@version` and digest. A version string is accepted only while that version is active.
+
 - Headers: `Idempotency-Key: <unique-key>`, `Authorization: Bearer <token>`
 - Body:
 ```json
@@ -284,7 +294,7 @@ Returns purpose-level budget caps, spent, held reservations, and attempt status 
 ## Operator CLI Reference (`kernelctl`)
 
 ```sh
-# Database Schema Migrations (transactional, versioned, checksum-validated 0001 to 0007)
+# Database Schema Migrations (transactional, versioned, checksum-validated 0001 to 0013)
 DATABASE_URL=postgres://... kernelctl migrate
 
 # Validate & Compile Behavior Pack
@@ -297,6 +307,19 @@ DATABASE_URL=postgres://... kernelctl publish packs/examples/support-triage.json
 
 # Inspect Published Compiled Graph
 kernelctl inspect support.triage 1.1.0
+
+# Activate a published release, then inspect its revision
+kernelctl promote support.triage 1.1.0 0
+kernelctl inspect-active support.triage
+
+# Switch to another published version using the current revision from inspect-active
+kernelctl promote support.triage 1.1.1 1
+
+# Restore a previous published version using the new current revision
+kernelctl rollback support.triage 1.1.0 2
+
+# Revoke a release; if it is active, decisions fail closed until another is promoted
+kernelctl revoke-release support.triage 1.1.1
 
 # Service Token Management
 KERNEL_NEW_SERVICE_TOKEN="super-secret-random-32-byte-token..." \
@@ -340,9 +363,17 @@ cargo test --workspace
 ### 2. Run Full PostgreSQL Integration Test
 With a local PostgreSQL database running:
 ```sh
+DATABASE_URL="postgres://postgres:kernel_test@127.0.0.1:32770/kernel_test" \
+cargo run -p kernelctl -- migrate
 KERNEL_TEST_DATABASE_URL="postgres://postgres:kernel_test@127.0.0.1:32770/kernel_test" \
-cargo test --test postgres_flow
+cargo test --workspace
 ```
+
+The daemon should connect with a dedicated login that is a member of `kernel_runtime`, not the migration/table-owner role. Each runtime query sets transaction-local tenant context for RLS. `kernelctl` and `kernel-worker` need separately controlled administrative database credentials. `kernel_runtime` is a NOLOGIN role; provision the login and membership in deployment.
+
+`POST /v1/decision-jobs` accepts the same decision body with `execution_profile: "deferred"` and returns `202` with a stable `job_id`; `GET /v1/decision-jobs/{id}` returns its status and eventual receipt. The worker uses `DATABASE_URL` and the same `KERNEL_PROVIDER_*` settings as the daemon. Set `KERNEL_OUTBOX_URL` to an HTTPS sink and `KERNEL_OUTBOX_ALLOWED_HOST` to its exact hostname to deliver committed events; without them, events stay pending. Consumers must deduplicate by the `Idempotency-Key` event ID.
+
+Evidence revisions are immutable. Repeating identical evidence returns `200`; new evidence returns `201`; changing an existing ID and revision returns `409 EVIDENCE_CONFLICT`. Sensitivity must be `public`, `internal`, `confidential`, or `restricted`.
 
 ### 3. Run Performance Benchmark
 ```sh

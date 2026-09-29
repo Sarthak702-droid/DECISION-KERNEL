@@ -1,4 +1,6 @@
 //! Conservative crash recovery: preserve holds for attempts that may have dispatched.
+mod jobs;
+mod outbox;
 use sqlx::PgPool;
 use std::env;
 
@@ -11,6 +13,11 @@ async fn main() {
 }
 async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let pool = PgPool::connect(&env::var("DATABASE_URL")?).await?;
+    let outbox_sink = outbox::Sink::from_env()?;
+    let job_processor = jobs::Processor::from_env()?;
+    if outbox_sink.is_none() {
+        eprintln!("outbox delivery disabled: KERNEL_OUTBOX_URL is unset; events remain pending");
+    }
     loop {
         let changed = sqlx::query("UPDATE provider_attempts SET status='uncertain' WHERE status='dispatch_intent' AND created_at < now() - interval '60 seconds'")
             .execute(&pool).await?;
@@ -27,6 +34,15 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
                 "marked {} undispatched claims retryable; next claim receives a new fencing generation",
                 retryable.rows_affected()
             );
+        }
+        let ran_job = job_processor.run_once(&pool).await?;
+        let sent_event = if let Some(sink) = &outbox_sink {
+            sink.drain_once(&pool).await?
+        } else {
+            false
+        };
+        if ran_job || sent_event {
+            continue;
         }
         tokio::time::sleep(std::time::Duration::from_secs(10)).await;
     }

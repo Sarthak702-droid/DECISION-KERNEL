@@ -41,6 +41,8 @@ pub struct EvaluationDataset {
     pub release_hash_sha256: String,
     pub provider_id: String,
     pub model_id: String,
+    #[serde(default)]
+    pub requested_model_id: Option<String>,
     pub adapter_version: String,
     pub cases: Vec<LabeledCase>,
 }
@@ -70,6 +72,7 @@ pub struct EvaluationReport {
     pub release_hash_sha256: String,
     pub provider_id: String,
     pub model_id: String,
+    pub requested_model_id: String,
     pub adapter_version: String,
     pub dataset_digest_sha256: String,
     pub reviewed_test_cases: u64,
@@ -116,6 +119,10 @@ pub fn evaluate(
         || dataset.release_hash_sha256 != graph.content_hash_sha256
         || dataset.provider_id.is_empty()
         || dataset.model_id.is_empty()
+        || dataset
+            .requested_model_id
+            .as_deref()
+            .is_some_and(str::is_empty)
         || dataset.adapter_version.is_empty()
         || dataset.cases.is_empty()
         || dataset.cases.len() > 1_000_000
@@ -151,10 +158,10 @@ pub fn evaluate(
         {
             return Err(EvaluationError::Case(case.id.clone()));
         }
-        if let Some(previous) = groups.insert(case.group_id.clone(), case.partition) {
-            if previous != case.partition {
-                return Err(EvaluationError::Leakage(case.group_id.clone()));
-            }
+        if let Some(previous) = groups.insert(case.group_id.clone(), case.partition)
+            && previous != case.partition
+        {
+            return Err(EvaluationError::Leakage(case.group_id.clone()));
         }
         if case.partition != Partition::Test {
             continue;
@@ -242,6 +249,9 @@ pub fn evaluate(
         task_id: dataset.task_id,
         release_hash_sha256: dataset.release_hash_sha256,
         provider_id: dataset.provider_id,
+        requested_model_id: dataset
+            .requested_model_id
+            .unwrap_or_else(|| dataset.model_id.clone()),
         model_id: dataset.model_id,
         adapter_version: dataset.adapter_version,
         dataset_digest_sha256: digest,
@@ -335,6 +345,7 @@ mod tests {
             release_hash_sha256: graph.content_hash_sha256.clone(),
             provider_id: "fixture".into(),
             model_id: "fixture".into(),
+            requested_model_id: None,
             adapter_version: "fixture-v1".into(),
             cases,
         };

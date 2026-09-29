@@ -297,6 +297,20 @@ pub struct DecisionRequest {
     pub constraints: RequestLimits,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct QueuedDecision {
+    pub scope: Scope,
+    pub schema_version: String,
+    pub decision_type: String,
+    pub release: String,
+    pub release_digest_sha256: String,
+    pub idempotency_key: String,
+    pub state: BTreeMap<String, Value>,
+    pub evidence_refs: Vec<(String, u64)>,
+    pub constraints: RequestLimits,
+}
+
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct RequestLimits {
@@ -328,6 +342,8 @@ pub struct DecisionReceipt {
     pub evidence_revisions: BTreeMap<String, u64>,
     pub provider_id: Option<String>,
     pub model_id: Option<String>,
+    #[serde(default)]
+    pub returned_model_id: Option<String>,
     pub attempts: u8,
     pub prediction_cache_hit: bool,
     pub cost_nano_usd: Option<u64>,

@@ -15,7 +15,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
         return Err(
-            "usage: kernelctl <migrate|validate|compile|publish|inspect|reconcile-attempt> ..."
+            "usage: kernelctl <migrate|validate|compile|publish|inspect|inspect-active|promote|rollback|revoke-release|reconcile-attempt> ..."
                 .into(),
         );
     }
@@ -51,7 +51,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
             return Err("pack does not enable qualified semantic acceptance".into());
         }
         if qualification.provider_id.as_deref() != Some(&report.provider_id)
-            || qualification.model_id.as_deref() != Some(&report.model_id)
+            || qualification.model_id.as_deref() != Some(&report.requested_model_id)
             || qualification.adapter_version.as_deref() != Some(&report.adapter_version)
         {
             return Err("evaluation identity does not match pack binding".into());
@@ -86,8 +86,8 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
             .qualification_ref
             .as_ref()
             .ok_or("missing qualification reference")?;
-        let inserted=sqlx::query("INSERT INTO provider_qualifications (tenant_id,project_id,environment,qualification_ref,release_hash_sha256,provider_id,model_id,adapter_version,evaluation_digest_sha256,reviewed_sample_count,valid_until_unix_ms,evaluation_report,approval_ref,approved_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) ON CONFLICT DO NOTHING")
-            .bind(&tenant).bind(&project).bind(&environment).bind(reference).bind(&graph.content_hash_sha256).bind(&report.provider_id).bind(&report.model_id).bind(&report.adapter_version).bind(&report.dataset_digest_sha256).bind(i64::try_from(report.reviewed_test_cases)?).bind(valid_until).bind(serde_json::to_value(&report)?).bind(approval_ref).bind(approved_by)
+        let inserted=sqlx::query("INSERT INTO provider_qualifications (tenant_id,project_id,environment,qualification_ref,release_hash_sha256,provider_id,model_id,returned_model_id,adapter_version,evaluation_digest_sha256,reviewed_sample_count,valid_until_unix_ms,evaluation_report,approval_ref,approved_by) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) ON CONFLICT DO NOTHING")
+            .bind(&tenant).bind(&project).bind(&environment).bind(reference).bind(&graph.content_hash_sha256).bind(&report.provider_id).bind(&report.requested_model_id).bind(&report.model_id).bind(&report.adapter_version).bind(&report.dataset_digest_sha256).bind(i64::try_from(report.reviewed_test_cases)?).bind(valid_until).bind(serde_json::to_value(&report)?).bind(approval_ref).bind(approved_by)
             .execute(&pool).await?;
         if inserted.rows_affected() != 1 {
             return Err("qualification reference already exists".into());
@@ -109,6 +109,91 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
             "{}",
             serde_json::to_string_pretty(&row.get::<serde_json::Value, _>("compiled_graph"))?
         );
+        return Ok(());
+    }
+    if args[1] == "inspect-active" {
+        if args.len() != 3 {
+            return Err("usage: kernelctl inspect-active <decision-type>".into());
+        }
+        let pool = sqlx::PgPool::connect(&env::var("DATABASE_URL")?).await?;
+        let row = sqlx::query("SELECT p.version,p.content_hash_sha256,p.revision,r.revoked_at IS NOT NULL AS revoked FROM release_pointers p JOIN behavior_releases r ON r.tenant_id=p.tenant_id AND r.project_id=p.project_id AND r.environment=p.environment AND r.decision_type=p.decision_type AND r.version=p.version WHERE p.tenant_id=$1 AND p.project_id=$2 AND p.environment=$3 AND p.decision_type=$4")
+            .bind(env::var("KERNEL_TENANT_ID")?).bind(env::var("KERNEL_PROJECT_ID")?).bind(env::var("KERNEL_ENVIRONMENT")?).bind(&args[2])
+            .fetch_optional(&pool).await?.ok_or("release pointer not found")?;
+        println!(
+            "{}@{} revision {} {}{}",
+            args[2],
+            row.get::<String, _>("version"),
+            row.get::<i64, _>("revision"),
+            row.get::<String, _>("content_hash_sha256"),
+            if row.get::<bool, _>("revoked") {
+                " (revoked)"
+            } else {
+                ""
+            },
+        );
+        return Ok(());
+    }
+    if matches!(args[1].as_str(), "promote" | "rollback") {
+        if args.len() != 5 {
+            return Err("usage: kernelctl promote|rollback <decision-type> <version> <expected-revision> (use 0 to create a pointer)".into());
+        }
+        let expected: i64 = args[4].parse()?;
+        if expected < 0 {
+            return Err("expected revision must be nonnegative".into());
+        }
+        let pool = sqlx::PgPool::connect(&env::var("DATABASE_URL")?).await?;
+        let tenant = env::var("KERNEL_TENANT_ID")?;
+        let project = env::var("KERNEL_PROJECT_ID")?;
+        let environment = env::var("KERNEL_ENVIRONMENT")?;
+        let mut tx = pool.begin().await?;
+        let hash: Option<String> = sqlx::query_scalar("SELECT content_hash_sha256 FROM behavior_releases WHERE tenant_id=$1 AND project_id=$2 AND environment=$3 AND decision_type=$4 AND version=$5 AND revoked_at IS NULL")
+            .bind(&tenant).bind(&project).bind(&environment).bind(&args[2]).bind(&args[3])
+            .fetch_optional(&mut *tx).await?;
+        let hash = hash.ok_or("target release is missing or revoked")?;
+        let changed = if expected == 0 {
+            sqlx::query("INSERT INTO release_pointers (tenant_id,project_id,environment,decision_type,version,content_hash_sha256,revision) VALUES ($1,$2,$3,$4,$5,$6,1) ON CONFLICT DO NOTHING")
+                .bind(&tenant).bind(&project).bind(&environment).bind(&args[2]).bind(&args[3]).bind(&hash)
+                .execute(&mut *tx).await?.rows_affected()
+        } else {
+            sqlx::query("UPDATE release_pointers SET version=$5,content_hash_sha256=$6,revision=revision+1,updated_at=now() WHERE tenant_id=$1 AND project_id=$2 AND environment=$3 AND decision_type=$4 AND revision=$7")
+                .bind(&tenant).bind(&project).bind(&environment).bind(&args[2]).bind(&args[3]).bind(&hash).bind(expected)
+                .execute(&mut *tx).await?.rows_affected()
+        };
+        if changed != 1 {
+            return Err("release pointer revision conflict".into());
+        }
+        sqlx::query("INSERT INTO outbox_events (event_id,tenant_id,project_id,environment,event_type,payload) VALUES (gen_random_uuid()::text,$1,$2,$3,'release.promoted',$4)")
+            .bind(&tenant).bind(&project).bind(&environment)
+            .bind(serde_json::json!({"decision_type":args[2],"version":args[3],"revision":expected+1,"content_hash_sha256":hash}))
+            .execute(&mut *tx).await?;
+        tx.commit().await?;
+        println!(
+            "active {}@{} revision {} {}",
+            args[2],
+            args[3],
+            expected + 1,
+            hash
+        );
+        return Ok(());
+    }
+    if args[1] == "revoke-release" {
+        if args.len() != 4 {
+            return Err("usage: kernelctl revoke-release <decision-type> <version>".into());
+        }
+        let pool = sqlx::PgPool::connect(&env::var("DATABASE_URL")?).await?;
+        let mut tx = pool.begin().await?;
+        let changed = sqlx::query("UPDATE behavior_releases SET revoked_at=now() WHERE tenant_id=$1 AND project_id=$2 AND environment=$3 AND decision_type=$4 AND version=$5 AND revoked_at IS NULL")
+            .bind(env::var("KERNEL_TENANT_ID")?).bind(env::var("KERNEL_PROJECT_ID")?).bind(env::var("KERNEL_ENVIRONMENT")?).bind(&args[2]).bind(&args[3])
+            .execute(&mut *tx).await?.rows_affected();
+        if changed != 1 {
+            return Err("active release not found".into());
+        }
+        sqlx::query("INSERT INTO outbox_events (event_id,tenant_id,project_id,environment,event_type,payload) VALUES (gen_random_uuid()::text,$1,$2,$3,'release.revoked',$4)")
+            .bind(env::var("KERNEL_TENANT_ID")?).bind(env::var("KERNEL_PROJECT_ID")?).bind(env::var("KERNEL_ENVIRONMENT")?)
+            .bind(serde_json::json!({"decision_type":args[2],"version":args[3]}))
+            .execute(&mut *tx).await?;
+        tx.commit().await?;
+        println!("revoked {}@{}", args[2], args[3]);
         return Ok(());
     }
     if args[1] == "register-token" {
@@ -191,9 +276,8 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         let mut matched = 0;
         let mut mismatched = 0;
         for (i, rec) in records.iter().enumerate() {
-            let request: kernel_core::DecisionRequest = serde_json::from_value(
-                rec.get("request").cloned().unwrap_or_else(|| rec.clone()),
-            )?;
+            let request: kernel_core::DecisionRequest =
+                serde_json::from_value(rec.get("request").cloned().unwrap_or_else(|| rec.clone()))?;
             let scope = kernel_core::Scope {
                 tenant_id: "replay-tenant".into(),
                 project_id: "replay-project".into(),
@@ -308,60 +392,60 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         println!("Latency p99:       {:.4} ms", p99);
 
         // Audited storage benchmark if DATABASE_URL is available
-        if let Ok(db_url) = env::var("DATABASE_URL") {
-            if let Ok(pool) = sqlx::PgPool::connect(&db_url).await {
-                println!("\n[Lane A: Audited No-Model Request (DB + Receipt Commit)]");
-                let db_runs = 200;
-                let store = std::sync::Arc::new(kernel_runtime::postgres::PostgresStore {
-                    pool: pool.clone(),
-                    purpose: graph.pack.id.clone(),
-                });
-                let engine = std::sync::Arc::new(kernel_runtime::Engine {
-                    graph: std::sync::Arc::new(graph.clone()),
-                    provider: None,
-                    store: store.clone(),
-                    provider_permits: std::sync::Arc::new(tokio::sync::Semaphore::new(16)),
-                    platform_deadline_ms: 3000,
-                    platform_max_cost_nano_usd: 1_000_000,
-                });
+        if let Ok(db_url) = env::var("DATABASE_URL")
+            && let Ok(pool) = sqlx::PgPool::connect(&db_url).await
+        {
+            println!("\n[Lane A: Audited No-Model Request (DB + Receipt Commit)]");
+            let db_runs = 200;
+            let store = std::sync::Arc::new(kernel_runtime::postgres::PostgresStore {
+                pool: pool.clone(),
+                purpose: graph.pack.id.clone(),
+            });
+            let engine = std::sync::Arc::new(kernel_runtime::Engine {
+                graph: std::sync::Arc::new(graph.clone()),
+                provider: None,
+                store: store.clone(),
+                provider_permits: std::sync::Arc::new(tokio::sync::Semaphore::new(16)),
+                platform_deadline_ms: 3000,
+                platform_max_cost_nano_usd: 1_000_000,
+            });
 
-                // Ensure release exists in DB
-                let _ = sqlx::query("INSERT INTO behavior_releases (tenant_id,project_id,environment,decision_type,version,content_hash_sha256,compiled_graph) VALUES ($1,$2,$3,$4,$5,$6,$7) ON CONFLICT DO NOTHING")
+            // Ensure release exists in DB
+            let _ = sqlx::query("INSERT INTO behavior_releases (tenant_id,project_id,environment,decision_type,version,content_hash_sha256,compiled_graph) VALUES ($1,$2,$3,$4,$5,$6,$7) ON CONFLICT DO NOTHING")
                     .bind(&scope.tenant_id).bind(&scope.project_id).bind(&scope.environment).bind(&graph.pack.id).bind(&graph.pack.version).bind(&graph.content_hash_sha256).bind(serde_json::to_value(&graph)?)
                     .execute(&pool).await;
 
-                let mut db_latencies = Vec::with_capacity(db_runs);
-                let db_bench_start = std::time::Instant::now();
-                for i in 0..db_runs {
-                    let mut req = request.clone();
-                    req.idempotency_key = format!(
-                        "bench-audit-{}-{}",
-                        std::time::SystemTime::now()
-                            .duration_since(std::time::UNIX_EPOCH)?
-                            .as_nanos(),
-                        i
-                    );
-                    let t0 = std::time::Instant::now();
-                    let _ = engine.decide(scope.clone(), req).await?;
-                    db_latencies.push(t0.elapsed().as_nanos() as f64 / 1_000_000.0);
-                }
-                let total_db_time = db_bench_start.elapsed();
-                db_latencies.sort_by(|a, b| a.partial_cmp(b).unwrap());
-                let db_p50 = db_latencies[(db_runs as f64 * 0.50) as usize];
-                let db_p95 = db_latencies[(db_runs as f64 * 0.95) as usize];
-                let db_p99 = db_latencies[(db_runs as f64 * 0.99) as usize];
-                let db_throughput = db_runs as f64 / total_db_time.as_secs_f64();
-
-                println!("Iterations:        {db_runs}");
-                println!("Throughput:        {:.1} req/sec", db_throughput);
-                println!("Latency p50:       {:.2} ms", db_p50);
-                println!(
-                    "Latency p95:       {:.2} ms  (Target: < 50.0 ms -> {})",
-                    db_p95,
-                    if db_p95 < 50.0 { "PASS" } else { "FAIL" }
+            let mut db_latencies = Vec::with_capacity(db_runs);
+            let db_bench_start = std::time::Instant::now();
+            for i in 0..db_runs {
+                let mut req = request.clone();
+                req.idempotency_key = format!(
+                    "bench-audit-{}-{}",
+                    std::time::SystemTime::now()
+                        .duration_since(std::time::UNIX_EPOCH)?
+                        .as_nanos(),
+                    i
                 );
-                println!("Latency p99:       {:.2} ms", db_p99);
+                let t0 = std::time::Instant::now();
+                let _ = engine.decide(scope.clone(), req).await?;
+                db_latencies.push(t0.elapsed().as_nanos() as f64 / 1_000_000.0);
             }
+            let total_db_time = db_bench_start.elapsed();
+            db_latencies.sort_by(|a, b| a.partial_cmp(b).unwrap());
+            let db_p50 = db_latencies[(db_runs as f64 * 0.50) as usize];
+            let db_p95 = db_latencies[(db_runs as f64 * 0.95) as usize];
+            let db_p99 = db_latencies[(db_runs as f64 * 0.99) as usize];
+            let db_throughput = db_runs as f64 / total_db_time.as_secs_f64();
+
+            println!("Iterations:        {db_runs}");
+            println!("Throughput:        {:.1} req/sec", db_throughput);
+            println!("Latency p50:       {:.2} ms", db_p50);
+            println!(
+                "Latency p95:       {:.2} ms  (Target: < 50.0 ms -> {})",
+                db_p95,
+                if db_p95 < 50.0 { "PASS" } else { "FAIL" }
+            );
+            println!("Latency p99:       {:.2} ms", db_p99);
         }
         println!("\n=== Benchmark Completed Successfully ===");
         return Ok(());
@@ -399,7 +483,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 async fn migrate(pool: &sqlx::PgPool) -> Result<(), Box<dyn std::error::Error>> {
-    let migrations: [(i64, &str); 7] = [
+    let migrations: [(i64, &str); 13] = [
         (1, include_str!("../../../migrations/0001_init.sql")),
         (
             2,
@@ -424,6 +508,24 @@ async fn migrate(pool: &sqlx::PgPool) -> Result<(), Box<dyn std::error::Error>> 
         (
             7,
             include_str!("../../../migrations/0007_reviews_outcomes.sql"),
+        ),
+        (
+            8,
+            include_str!("../../../migrations/0008_release_pointers.sql"),
+        ),
+        (
+            9,
+            include_str!("../../../migrations/0009_returned_model_qualification.sql"),
+        ),
+        (10, include_str!("../../../migrations/0010_tenant_rls.sql")),
+        (11, include_str!("../../../migrations/0011_outbox.sql")),
+        (
+            12,
+            include_str!("../../../migrations/0012_outbox_failure.sql"),
+        ),
+        (
+            13,
+            include_str!("../../../migrations/0013_decision_jobs.sql"),
         ),
     ];
     let mut tx = pool.begin().await?;

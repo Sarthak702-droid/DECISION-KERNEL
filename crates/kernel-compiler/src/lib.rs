@@ -184,8 +184,8 @@ pub fn compile(pack: DecisionPack) -> Result<CompiledDecisionGraph, CompileError
             "semantic acceptance requires qualification criteria".into(),
         ));
     }
-    if let Some(criteria) = &pack.qualification_criteria {
-        if criteria.min_reviewed_test_cases == 0
+    if let Some(criteria) = &pack.qualification_criteria
+        && (criteria.min_reviewed_test_cases == 0
             || criteria.min_cases_per_required_slice == 0
             || criteria.required_slices.is_empty()
             || criteria.required_slices.iter().any(String::is_empty)
@@ -198,10 +198,9 @@ pub fn compile(pack: DecisionPack) -> Result<CompiledDecisionGraph, CompileError
             || !criteria.min_coverage.is_finite()
             || !(0.0..=1.0).contains(&criteria.min_coverage)
             || !criteria.min_accuracy.is_finite()
-            || !(0.0..=1.0).contains(&criteria.min_accuracy)
-        {
-            return Err(CompileError::Type("invalid qualification criteria".into()));
-        }
+            || !(0.0..=1.0).contains(&criteria.min_accuracy))
+    {
+        return Err(CompileError::Type("invalid qualification criteria".into()));
     }
     if pack.semantic_state_fields.len() > 32
         || pack.semantic_state_fields.iter().any(String::is_empty)
@@ -358,13 +357,13 @@ pub fn compile(pack: DecisionPack) -> Result<CompiledDecisionGraph, CompileError
             return Err(CompileError::Type(id.clone()));
         }
     }
-    let hard_deny_indices = pack
+    let hard_deny_indices: Vec<usize> = pack
         .policy
         .hard_deny_nodes
         .iter()
         .map(|id| ids[id])
         .collect();
-    let accept_indices = pack.policy.accept_nodes.iter().map(|id| ids[id]).collect();
+    let accept_indices: Vec<usize> = pack.policy.accept_nodes.iter().map(|id| ids[id]).collect();
     let mut ready: VecDeque<_> = indegree
         .iter()
         .enumerate()
@@ -382,6 +381,33 @@ pub fn compile(pack: DecisionPack) -> Result<CompiledDecisionGraph, CompileError
     }
     if order.len() != pack.nodes.len() {
         return Err(CompileError::Cycle);
+    }
+    let mut live = vec![false; pack.nodes.len()];
+    let mut pending: Vec<usize> = pack
+        .nodes
+        .iter()
+        .enumerate()
+        .filter_map(|(i, node)| {
+            matches!(
+                node.operation,
+                Operation::SemanticQuestion { .. } | Operation::LiteralAnswer { .. }
+            )
+            .then_some(i)
+        })
+        .chain(hard_deny_indices.iter().copied())
+        .chain(accept_indices.iter().copied())
+        .collect();
+    while let Some(index) = pending.pop() {
+        if !live[index] {
+            live[index] = true;
+            pending.extend(dependencies[index].iter().copied());
+        }
+    }
+    if let Some(index) = live.iter().position(|used| !used) {
+        return Err(CompileError::Type(format!(
+            "unreachable node: {}",
+            pack.nodes[index].id
+        )));
     }
     // Semantic prerequisites are deterministic, so all active questions share one bounded stage.
     let semantic_batches = if semantics.is_empty() {
@@ -481,5 +507,20 @@ mod tests {
         let node =
             r#"{"id":"x","op":"fact_equals","field":"flag","value":true,"shell":"echo bad"}"#;
         assert!(serde_json::from_str::<Node>(node).is_err());
+    }
+    #[test]
+    fn unreachable_node_is_rejected() {
+        let mut p = pack();
+        p.nodes.push(Node {
+            id: "unused".into(),
+            depends_on: vec![],
+            operation: Operation::FactEquals {
+                field: "unused".into(),
+                value: Value::Bool(true),
+            },
+        });
+        assert!(
+            matches!(compile(p), Err(CompileError::Type(message)) if message.contains("unreachable node"))
+        );
     }
 }

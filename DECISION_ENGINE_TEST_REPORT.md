@@ -1,5 +1,37 @@
 # Decision Kernel test report
 
+## 29 September 2026 — PRD v2.0 implementation audit
+
+The latest local run passed `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --offline -- -D warnings`, `git diff --check`, and `KERNEL_TEST_DATABASE_URL=... cargo test --workspace --offline` against the dedicated PostgreSQL test database. The test run included compiler, provider, runtime, tenant RLS, release pointer, deferred job, and outbox tests. `cargo deny check licenses bans sources` passed. The full advisory gate did not run because its upstream advisory fetch failed; `cargo-audit` was unavailable locally.
+
+| PRD gate | Local evidence and current limit |
+| --- | --- |
+| DK-G01 Rust boundary | Rust workspace builds and tests pass locally. |
+| DK-G02 Compiler | Cycle, missing producer, unknown field, and unreachable node tests pass. Full compiler optimization and all limits still need acceptance coverage. |
+| DK-G03/G04 authority and fast path | Hard-deny and zero-provider-call tests pass. |
+| DK-G05 idempotency | PostgreSQL receipt and deferred-job conflict tests pass. Concurrent HTTP duplicate test is pending. |
+| DK-G06 budget | Atomic scoped reservation integration test passes. Hierarchical buckets, explicit reservation lifecycle, and concurrent race proof remain pending. |
+| DK-G07 durability | Leased jobs and outbox with generation fencing pass local database tests. Crash injection and uncertain-charge reconciliation proof remain pending. |
+| DK-G08 uncertainty | No fabricated probability tests pass. Uncertainty v2 and calibrator artifacts remain pending. |
+| DK-G09 tenant isolation | RLS with nonowner runtime role, cross-tenant rows, transaction context reuse, and cross-product receipt/review/outcome access pass local PostgreSQL tests. Export isolation cannot be verified until export exists. |
+| DK-G10 replay | The small deterministic replay fixture passes. Fresh semantic replay API is pending. |
+| DK-G11 provider portability | Router requested/returned model validation and qualification binding have tests. Two independent live qualified providers have not been demonstrated. |
+| DK-G12 performance | Earlier local pure-core and audited DB microbenchmarks passed their targets. Reproducible load, saturation, and production-environment runs remain pending. |
+| DK-G13 release operations | Local PostgreSQL tests cover active pointer pinning, promotion revision conflict, rollback, and revocation. |
+| DK-G14 router identity | Returned-model allowlist and exact qualification matching pass tests. Live router qualification remains pending. |
+| DK-G15 backup/restore | No executed restore drill or measured RPO/RTO. |
+| DK-G16 retention/export | No tenant export or deletion propagation implementation. |
+
+The v2.0 PRD is **not complete or production-ready**. Additional open work includes Evidence/Receipt v2 and state-builder semantics, structured adjudication and outcome lifecycle, hierarchical budgets, calibration and qualified evaluation slices, OpenAPI/SDK, observability/runbooks, container packaging, retention/export, backup restore, and live-provider acceptance. A local passing suite does not close these gates. The dated sections below are historical snapshots; their descriptions of router support and migration status have been superseded by this audit.
+
+## 29 September 2026 follow-up
+
+The dedicated local PostgreSQL test container passed `cargo test --workspace -- --nocapture` with `KERNEL_TEST_DATABASE_URL` set, including the receipt/accounting integration test and the release pointer promotion test. `cargo clippy --workspace --all-targets -- -D warnings` also passed. Migration 0008 applied through `kernelctl migrate`. A CLI smoke test published two releases, promoted and rolled back the active pointer, rejected a stale revision, and showed a revoked active release as revoked. The test used an isolated tenant scope in the local test database.
+
+The 200-request audited no-model benchmark measured 3.59 ms p95 on the local PostgreSQL container, below the 50 ms target. The 5,000-iteration pure core benchmark measured 0.2207 ms p95, below the 1 ms target. These measurements do not establish production load performance or live-provider behavior. No provider credential was available in this session, so the earlier OpenRouter result was not repeated.
+
+## 28 September 2026 baseline
+
 **Date:** 28 September 2026  
 **Revision:** `7f86ad7`  
 **Scope:** Local policy engine verification and OpenRouter `typesafe/jev-router` smoke tests.

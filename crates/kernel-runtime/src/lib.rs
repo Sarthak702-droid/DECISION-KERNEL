@@ -31,7 +31,7 @@ pub enum RuntimeError {
 
 pub enum Claim {
     New(u64),
-    Existing(DecisionReceipt),
+    Existing(Box<DecisionReceipt>),
     Busy,
     Conflict,
 }
@@ -82,6 +82,7 @@ pub trait ReceiptStore: Send + Sync {
         qualification_ref: &'a str,
         release_hash: &'a str,
         identity: &'a ProviderIdentity,
+        returned_model_id: &'a str,
         now_ms: u64,
     ) -> Pin<Box<dyn Future<Output = Result<bool, RuntimeError>> + Send + 'a>>;
 }
@@ -101,7 +102,9 @@ fn semantic_response_valid(
     identity: &ProviderIdentity,
     questions: &[SemanticQuestion],
 ) -> bool {
-    if response.provider_id != identity.provider_id || response.model_id != identity.model_id {
+    if response.provider_id != identity.provider_id
+        || !identity.accepts_returned_model(&response.model_id)
+    {
         return false;
     }
     let expected: BTreeSet<_> = questions.iter().map(|q| q.id.as_str()).collect();
@@ -116,31 +119,56 @@ fn semantic_response_valid(
 }
 
 pub struct PrefixResult {
-    pub predicates:Vec<bool>,
-    pub answers:BTreeMap<String,Answer>,
-    pub unresolved:Vec<SemanticQuestion>,
+    pub predicates: Vec<bool>,
+    pub answers: BTreeMap<String, Answer>,
+    pub unresolved: Vec<SemanticQuestion>,
 }
-pub fn evaluate_prefix(graph:&CompiledDecisionGraph,state:&BTreeMap<String,serde_json::Value>,valid_evidence:&BTreeSet<String>)->Result<PrefixResult,RuntimeError>{
-    let mut predicates=vec![false;graph.pack.nodes.len()];
-    let mut answers=BTreeMap::new();
-    let mut unresolved=Vec::new();
+pub fn evaluate_prefix(
+    graph: &CompiledDecisionGraph,
+    state: &BTreeMap<String, serde_json::Value>,
+    valid_evidence: &BTreeSet<String>,
+) -> Result<PrefixResult, RuntimeError> {
+    let mut predicates = vec![false; graph.pack.nodes.len()];
+    let mut answers = BTreeMap::new();
+    let mut unresolved = Vec::new();
     for &idx in &graph.execution_order {
-        let node=&graph.pack.nodes[idx];
-        let enabled=graph.dependencies[idx].iter().all(|&i|predicates[i]);
+        let node = &graph.pack.nodes[idx];
+        let enabled = graph.dependencies[idx].iter().all(|&i| predicates[i]);
         match &node.operation {
-            Operation::FactEquals{field,value}=>predicates[idx]=state.get(field)==Some(value),
-            Operation::EvidencePresent{evidence_id}=>predicates[idx]=valid_evidence.contains(evidence_id),
-            Operation::BooleanAnd=>predicates[idx]=enabled,
-            Operation::BooleanOr=>predicates[idx]=graph.dependencies[idx].iter().any(|&i|predicates[i]),
-            Operation::LiteralAnswer{output,answer} if enabled=>{answers.insert(output.clone(),answer.clone());},
-            Operation::SemanticQuestion{output,prompt} if enabled=>{
-                let def=graph.pack.outputs.iter().find(|d|d.id()==output).ok_or(RuntimeError::Release)?;
-                unresolved.push(SemanticQuestion{id:node.id.clone(),prompt:prompt.clone(),output:def.clone()});
+            Operation::FactEquals { field, value } => {
+                predicates[idx] = state.get(field) == Some(value)
             }
-            _=>{}
+            Operation::EvidencePresent { evidence_id } => {
+                predicates[idx] = valid_evidence.contains(evidence_id)
+            }
+            Operation::BooleanAnd => predicates[idx] = enabled,
+            Operation::BooleanOr => {
+                predicates[idx] = graph.dependencies[idx].iter().any(|&i| predicates[i])
+            }
+            Operation::LiteralAnswer { output, answer } if enabled => {
+                answers.insert(output.clone(), answer.clone());
+            }
+            Operation::SemanticQuestion { output, prompt } if enabled => {
+                let def = graph
+                    .pack
+                    .outputs
+                    .iter()
+                    .find(|d| d.id() == output)
+                    .ok_or(RuntimeError::Release)?;
+                unresolved.push(SemanticQuestion {
+                    id: node.id.clone(),
+                    prompt: prompt.clone(),
+                    output: def.clone(),
+                });
+            }
+            _ => {}
         }
     }
-    Ok(PrefixResult{predicates,answers,unresolved})
+    Ok(PrefixResult {
+        predicates,
+        answers,
+        unresolved,
+    })
 }
 
 pub fn evaluate_pure(
@@ -170,9 +198,7 @@ pub fn evaluate_pure(
         }
         let actual = format!(
             "{:x}",
-            Sha256::digest(
-                serde_json::to_vec(&e.value).map_err(|_| RuntimeError::InvalidRequest)?
-            )
+            Sha256::digest(serde_json::to_vec(&e.value).map_err(|_| RuntimeError::InvalidRequest)?)
         );
         if actual == e.digest_sha256 {
             valid_evidence.insert(e.id.clone());
@@ -223,9 +249,7 @@ pub fn evaluate_pure(
         scope,
         request_digest_sha256: format!(
             "{:x}",
-            Sha256::digest(
-                serde_json::to_vec(&request).map_err(|_| RuntimeError::InvalidRequest)?
-            )
+            Sha256::digest(serde_json::to_vec(&request).map_err(|_| RuntimeError::InvalidRequest)?)
         ),
         release: request.release,
         release_digest_sha256: graph.content_hash_sha256.clone(),
@@ -235,6 +259,7 @@ pub fn evaluate_pure(
         evidence_revisions,
         provider_id: None,
         model_id: None,
+        returned_model_id: None,
         attempts: 0,
         prediction_cache_hit: false,
         cost_nano_usd: Some(0),
@@ -249,6 +274,7 @@ pub fn evaluate_pure(
 }
 
 #[cfg(test)]
+#[allow(clippy::items_after_test_module)]
 mod tests {
     use super::*;
     use kernel_compiler::{
@@ -277,7 +303,7 @@ mod tests {
         ) -> Pin<Box<dyn Future<Output = Result<Claim, RuntimeError>> + Send + 'a>> {
             Box::pin(async move {
                 Ok(match self.receipts.lock().unwrap().get(key) {
-                    Some((d, r)) if d == digest => Claim::Existing(r.clone()),
+                    Some((d, r)) if d == digest => Claim::Existing(Box::new(r.clone())),
                     Some(_) => Claim::Conflict,
                     None => Claim::New(1),
                 })
@@ -349,6 +375,7 @@ mod tests {
             _: &'a str,
             _: &'a str,
             _: &'a ProviderIdentity,
+            _: &'a str,
             _: u64,
         ) -> Pin<Box<dyn Future<Output = Result<bool, RuntimeError>> + Send + 'a>> {
             Box::pin(async { Ok(false) })
@@ -361,6 +388,7 @@ mod tests {
                 provider_id: "fixture".into(),
                 model_id: "fixture".into(),
                 adapter_version: "1".into(),
+                allowed_returned_models: vec![],
             }
         }
         fn capabilities(&self) -> ProviderCapabilities {
@@ -577,7 +605,7 @@ impl Engine {
                 .claim(&scope, &request.idempotency_key, &digest)
                 .await?
             {
-                Claim::Existing(r) => return Ok(r),
+                Claim::Existing(r) => return Ok(*r),
                 Claim::Busy if Instant::now() < deadline => {
                     tokio::time::sleep(std::time::Duration::from_millis(10)).await
                 }
@@ -616,7 +644,11 @@ impl Engine {
                 valid_evidence.insert(e.id.clone());
             }
         }
-        let PrefixResult{predicates,mut answers,unresolved}=evaluate_prefix(&self.graph,&request.state,&valid_evidence)?;
+        let PrefixResult {
+            predicates,
+            mut answers,
+            unresolved,
+        } = evaluate_prefix(&self.graph, &request.state, &valid_evidence)?;
         let hard_deny = self.graph.hard_deny_indices.iter().any(|&i| predicates[i]);
         let missing_evidence = self
             .graph
@@ -636,6 +668,7 @@ impl Engine {
         let mut reasons = Vec::new();
         let mut provider_id = None;
         let mut model_id = None;
+        let mut returned_model_id = None;
         let mut attempts = 0;
         let mut provider_reported_cost_nano_usd = None;
         let mut prediction_cache_hit = false;
@@ -709,7 +742,8 @@ impl Engine {
                     "purpose":&self.graph.pack.id,"decision_type":&request.decision_type,
                     "release":&self.graph.content_hash_sha256,"state_builder":"v1",
                     "evidence":&evidence_identity,"semantic_state":&semantic.state,"questions":&semantic.questions,
-                    "provider":&identity.provider_id,"model":&identity.model_id,"adapter":&identity.adapter_version
+                    "provider":&identity.provider_id,"model":&identity.model_id,"adapter":&identity.adapter_version,
+                    "allowed_returned_models":&identity.allowed_returned_models
                 });
                 let cache_key = format!(
                     "{:x}",
@@ -790,6 +824,7 @@ impl Engine {
                             }
                             provider_id = Some(identity.provider_id.clone());
                             model_id = Some(identity.model_id.clone());
+                            returned_model_id = Some(response.model_id.clone());
                             if attempts > 0 && response.answers.values().all(Answer::is_evaluated) {
                                 let evidence_expiry = request
                                     .evidence
@@ -812,6 +847,9 @@ impl Engine {
                                             reference,
                                             &self.graph.content_hash_sha256,
                                             &identity,
+                                            returned_model_id
+                                                .as_deref()
+                                                .expect("validated response model"),
                                             now_ms,
                                         )
                                         .await
@@ -868,6 +906,7 @@ impl Engine {
             evidence_revisions: refs,
             provider_id,
             model_id,
+            returned_model_id,
             attempts,
             prediction_cache_hit,
             cost_nano_usd: None,

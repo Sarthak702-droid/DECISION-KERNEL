@@ -2,7 +2,15 @@
 name = "kernel-worker"
 version = "0.1.0"
 edition.workspace = true
+license.workspace = true
 
 [dependencies]
 tokio.workspace = true
 sqlx.workspace = true
+reqwest.workspace = true
+serde_json.workspace = true
+kernel-core = { version = "0.1.0", path = "../../crates/kernel-core" }
+kernel-compiler = { version = "0.1.0", path = "../../crates/kernel-compiler" }
+kernel-provider = { version = "0.1.0", path = "../../crates/kernel-provider" }
+kernel-runtime = { version = "0.1.0", path = "../../crates/kernel-runtime" }
+sha2.workspace = true
