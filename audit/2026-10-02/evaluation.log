@@ -1,0 +1,31 @@
+{
+  "schema_version": "kernel-evaluation-report/v1",
+  "task_id": "support.triage",
+  "release_hash_sha256": "e9852a0f729d188c542938dc437e474ea481b48615cc03178567db77daff3e9f",
+  "provider_id": "example-provider",
+  "model_id": "example-model",
+  "requested_model_id": "example-model",
+  "adapter_version": "compatible-v1",
+  "dataset_digest_sha256": "28ec080afafc000b629d7d27ee902ed3f35a9a91313c9e090caa57d8bad7d566",
+  "reviewed_test_cases": 2,
+  "metrics": {
+    "urgent::english": {
+      "total": 2,
+      "evaluated": 1,
+      "correct": 1,
+      "coverage": 0.5,
+      "accuracy": 1.0,
+      "brier_score": null,
+      "brier_count": 0,
+      "classes": {
+        "true": {
+          "true_positives": 1,
+          "false_positives": 0,
+          "false_negatives": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      }
+    }
+  }
+}

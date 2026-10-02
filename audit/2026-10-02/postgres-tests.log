@@ -1,0 +1,107 @@
+
+running 5 tests
+test tests::cycle_fails ... ok
+test tests::unknown_node_field_is_rejected ... ok
+test tests::missing_producer_fails ... ok
+test tests::unreachable_node_is_rejected ... ok
+test tests::compiles_and_orders ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 3 tests
+test tests::discrete_true_has_no_fabricated_probability ... ok
+test tests::duplicate_nested_json_is_rejected ... ok
+test tests::invalid_distribution_is_rejected ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 2 tests
+test tests::labels_are_not_probabilities ... ok
+test tests::reports_coverage_and_rejects_group_leakage ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+test tests::system_one_fabricated_probability_fails_closed ... ok
+test tests::generated_probability_and_truncation_fail_closed ... ok
+test tests::system_one_normalizes_choice_and_noul_without_probability ... ok
+test tests::label_only_response_preserves_null_probability ... ok
+test tests::router_model_requires_explicit_allowlist ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 3 tests
+test tests::deterministic_answer_uses_zero_provider_calls ... ok
+test tests::hard_deny_dominates_and_is_idempotent ... ok
+test tests::label_only_semantic_result_stays_review_only_and_uncalibrated ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 1 test
+test postgres_receipts_cache_and_budget_are_scoped ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.54s
+
+
+running 2 tests
+test outbox::tests::leased_events_retry_and_fence_stale_workers ... ok
+test jobs::tests::queued_decision_pins_release_and_commits_receipt ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 1 test
+test tests::active_release_is_pinned_and_promotion_uses_revision ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.09s
+     Running unittests src/lib.rs (target/debug/deps/kernel_compiler-29451cd57db587ac)
+     Running unittests src/lib.rs (target/debug/deps/kernel_core-b91b81e1ecacdcd9)
+     Running unittests src/lib.rs (target/debug/deps/kernel_evaluation-70e58d3c7bd207ca)
+     Running unittests src/lib.rs (target/debug/deps/kernel_provider-3294c0c68970b6fe)
+     Running unittests src/lib.rs (target/debug/deps/kernel_runtime-9e2bd9badebc7f6d)
+     Running tests/postgres_flow.rs (target/debug/deps/postgres_flow-5a4ef85501a3a59a)
+     Running unittests src/main.rs (target/debug/deps/kernel_worker-179e87fb75dde1e1)
+     Running unittests src/main.rs (target/debug/deps/kernelctl-1601a8abfbfba5ed)
+     Running unittests src/main.rs (target/debug/deps/kerneld-fc804f7c52adaca7)
+   Doc-tests kernel_compiler
+   Doc-tests kernel_core
+   Doc-tests kernel_evaluation
+   Doc-tests kernel_provider
+   Doc-tests kernel_runtime

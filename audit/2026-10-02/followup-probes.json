@@ -1,0 +1,75 @@
+[
+  {
+    "check": "shared_deadline_does_not_bound_db_wait",
+    "result": {
+      "requested_deadline_ms": 50,
+      "elapsed_ms": 1219.34,
+      "response": [
+        200,
+        {
+          "receipt_id": "555c4d37960b4147136da9a78ff32423839767c8ea367665d3433907c71025a6",
+          "scope": {
+            "tenant_id": "audit-tenant-expanded",
+            "project_id": "audit-project",
+            "environment": "audit",
+            "product_id": "product-a"
+          },
+          "request_digest_sha256": "b72e974a21f0f6e5c74f4871039d0f3a0b5d9f016a4147e2c4d15b10297181c1",
+          "release": "audit.permission@1.1.0",
+          "release_digest_sha256": "3ddfb7df4be8d1b84c14d073db65dfc8afcbfc294e83b0f99dedf54ecf0e422e",
+          "answers": {
+            "authorized": {
+              "kind": "binary",
+              "proposition": "permitted",
+              "value": true,
+              "probability_true": null,
+              "probability_provenance": null
+            }
+          },
+          "disposition": "review",
+          "reason_codes": [
+            "deadline_exceeded"
+          ],
+          "evidence_revisions": {},
+          "provider_id": null,
+          "model_id": null,
+          "returned_model_id": null,
+          "attempts": 0,
+          "prediction_cache_hit": false,
+          "cost_nano_usd": null,
+          "provider_reported_cost_nano_usd": null,
+          "created_at_unix_ms": 1790947946775,
+          "kernel_compute_ms": 0,
+          "db_claim_ms": 1174,
+          "provider_latency_ms": null,
+          "db_commit_ms": null,
+          "total_latency_ms": null
+        }
+      ]
+    }
+  },
+  {
+    "check": "timing_fields",
+    "result": {
+      "db_commit_ms": null,
+      "total_latency_ms": null,
+      "cost_nano_usd": null
+    }
+  },
+  {
+    "check": "revoked_static_token_auth_path",
+    "result": "Static auth is checked before database tokens; DB revocation cannot disable it. Source evidence only."
+  },
+  {
+    "check": "reconciled_paid_crash_remains_pending",
+    "result": "pending|reconciled"
+  },
+  {
+    "check": "nonowner_release_lock_permission_failure",
+    "result": {
+      "exit_code": 3,
+      "stdout": "BEGIN\nSET\naudit-tenant-expanded|audit-project|audit\n",
+      "stderr": "ERROR:  permission denied for table behavior_releases\n"
+    }
+  }
+]

@@ -1,0 +1,3 @@
+outbox delivery disabled: KERNEL_OUTBOX_URL is unset; events remain pending
+marked 2 stale dispatch intents uncertain; budget holds retained
+marked 2 undispatched claims retryable; next claim receives a new fencing generation

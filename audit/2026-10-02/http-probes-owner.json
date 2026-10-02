@@ -1,0 +1,552 @@
+[
+  {
+    "check": "ready",
+    "result": [
+      200,
+      ""
+    ]
+  },
+  {
+    "check": "unauthenticated",
+    "result": [
+      401,
+      {
+        "error": {
+          "code": "UNAUTHORIZED",
+          "correlation_id": "dk-18dab987a834786c-2",
+          "message": "Authentication is required",
+          "request_id": "dk-18dab987a834786c-2",
+          "retryable": false
+        }
+      }
+    ]
+  },
+  {
+    "check": "other_tenant_cannot_read",
+    "result": [
+      404,
+      {
+        "error": {
+          "code": "NOT_FOUND",
+          "correlation_id": "dk-18dab987a88f8aa3-3",
+          "message": "The resource was not found",
+          "request_id": "dk-18dab987a88f8aa3-3",
+          "retryable": false
+        }
+      }
+    ]
+  },
+  {
+    "check": "owner_product_a_missing_permission",
+    "result": [
+      200,
+      {
+        "receipt_id": "0968362f2ee85ec6e1f049aeff28fb0265c73f0fea37b060ab61519b7b679f5d",
+        "scope": {
+          "tenant_id": "audit-tenant-expanded",
+          "project_id": "audit-project",
+          "environment": "audit",
+          "product_id": "product-a"
+        },
+        "request_digest_sha256": "17d51a7f6b12caf2a055e086a7ebaee6943699a3a76e2a041dd5487351697ae5",
+        "release": "audit.permission@1.1.0",
+        "release_digest_sha256": "3ddfb7df4be8d1b84c14d073db65dfc8afcbfc294e83b0f99dedf54ecf0e422e",
+        "answers": {
+          "authorized": {
+            "kind": "binary",
+            "proposition": "permitted",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "accept",
+        "reason_codes": [
+          "deterministic_resolution"
+        ],
+        "evidence_revisions": {},
+        "provider_id": null,
+        "model_id": null,
+        "returned_model_id": null,
+        "attempts": 0,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": null,
+        "created_at_unix_ms": 1790947794200,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 4,
+        "provider_latency_ms": null,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      }
+    ]
+  },
+  {
+    "check": "product_b_duplicate_receives_product_a_receipt",
+    "result": [
+      200,
+      {
+        "receipt_id": "0968362f2ee85ec6e1f049aeff28fb0265c73f0fea37b060ab61519b7b679f5d",
+        "scope": {
+          "tenant_id": "audit-tenant-expanded",
+          "project_id": "audit-project",
+          "environment": "audit",
+          "product_id": "product-a"
+        },
+        "request_digest_sha256": "17d51a7f6b12caf2a055e086a7ebaee6943699a3a76e2a041dd5487351697ae5",
+        "release": "audit.permission@1.1.0",
+        "release_digest_sha256": "3ddfb7df4be8d1b84c14d073db65dfc8afcbfc294e83b0f99dedf54ecf0e422e",
+        "answers": {
+          "authorized": {
+            "kind": "binary",
+            "proposition": "permitted",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "accept",
+        "reason_codes": [
+          "deterministic_resolution"
+        ],
+        "evidence_revisions": {},
+        "provider_id": null,
+        "model_id": null,
+        "returned_model_id": null,
+        "attempts": 0,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": null,
+        "created_at_unix_ms": 1790947794200,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 4,
+        "provider_latency_ms": null,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      }
+    ]
+  },
+  {
+    "check": "product_b_explicit_read_blocked",
+    "result": [
+      404,
+      {
+        "error": {
+          "code": "NOT_FOUND",
+          "correlation_id": "dk-18dab987ae43a968-6",
+          "message": "The resource was not found",
+          "request_id": "dk-18dab987ae43a968-6",
+          "retryable": false
+        }
+      }
+    ]
+  },
+  {
+    "check": "get_by_returned_receipt_id",
+    "result": [
+      404,
+      {
+        "error": {
+          "code": "NOT_FOUND",
+          "correlation_id": "dk-18dab987aeea4740-7",
+          "message": "The resource was not found",
+          "request_id": "dk-18dab987aeea4740-7",
+          "retryable": false
+        }
+      }
+    ]
+  },
+  {
+    "check": "get_by_idempotency_key",
+    "result": [
+      200,
+      {
+        "receipt_id": "0968362f2ee85ec6e1f049aeff28fb0265c73f0fea37b060ab61519b7b679f5d",
+        "scope": {
+          "tenant_id": "audit-tenant-expanded",
+          "project_id": "audit-project",
+          "environment": "audit",
+          "product_id": "product-a"
+        },
+        "request_digest_sha256": "17d51a7f6b12caf2a055e086a7ebaee6943699a3a76e2a041dd5487351697ae5",
+        "release": "audit.permission@1.1.0",
+        "release_digest_sha256": "3ddfb7df4be8d1b84c14d073db65dfc8afcbfc294e83b0f99dedf54ecf0e422e",
+        "answers": {
+          "authorized": {
+            "kind": "binary",
+            "proposition": "permitted",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "accept",
+        "reason_codes": [
+          "deterministic_resolution"
+        ],
+        "evidence_revisions": {},
+        "provider_id": null,
+        "model_id": null,
+        "returned_model_id": null,
+        "attempts": 0,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": null,
+        "created_at_unix_ms": 1790947794200,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 4,
+        "provider_latency_ms": null,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      }
+    ]
+  },
+  {
+    "check": "explicit_false_denies",
+    "result": [
+      200,
+      {
+        "receipt_id": "465ec99eb3f45dd89ba3cd0227416f84c8f487400dbe97e3427a5888fa5ab173",
+        "scope": {
+          "tenant_id": "audit-tenant-expanded",
+          "project_id": "audit-project",
+          "environment": "audit",
+          "product_id": "product-a"
+        },
+        "request_digest_sha256": "2d75241178e3ac2b68ff9c2cfb39bff29a55a0b4ec5588082f0e994463027d4e",
+        "release": "audit.permission@1.1.0",
+        "release_digest_sha256": "3ddfb7df4be8d1b84c14d073db65dfc8afcbfc294e83b0f99dedf54ecf0e422e",
+        "answers": {
+          "authorized": {
+            "kind": "binary",
+            "proposition": "permitted",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "deny",
+        "reason_codes": [
+          "hard_policy_deny"
+        ],
+        "evidence_revisions": {},
+        "provider_id": null,
+        "model_id": null,
+        "returned_model_id": null,
+        "attempts": 0,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": null,
+        "created_at_unix_ms": 1790947794267,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": null,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      }
+    ]
+  },
+  {
+    "check": "same_product_input_conflict",
+    "result": [
+      409,
+      {
+        "error": {
+          "code": "IDEMPOTENCY_CONFLICT",
+          "correlation_id": "dk-18dab987b176b025-a",
+          "message": "The request conflicts with existing state",
+          "request_id": "dk-18dab987b176b025-a",
+          "retryable": false
+        }
+      }
+    ]
+  },
+  {
+    "check": "forged_reviewer",
+    "result": [
+      201,
+      ""
+    ]
+  },
+  {
+    "check": "claimed_verified_outcome_0",
+    "result": [
+      201,
+      ""
+    ]
+  },
+  {
+    "check": "claimed_verified_outcome_1",
+    "result": [
+      201,
+      ""
+    ]
+  },
+  {
+    "check": "product_a_evidence_create",
+    "result": [
+      201,
+      ""
+    ]
+  },
+  {
+    "check": "product_b_can_reuse_product_a_evidence_revision",
+    "result": [
+      200,
+      ""
+    ]
+  },
+  {
+    "check": "product_b_evidence_loaded_for_decision",
+    "result": [
+      200,
+      {
+        "receipt_id": "34bea0cbda7e118d7440b58e3cee49c7359f9e3f16bddae7a9cb5296554ea1eb",
+        "scope": {
+          "tenant_id": "audit-tenant-expanded",
+          "project_id": "audit-project",
+          "environment": "audit",
+          "product_id": "product-b"
+        },
+        "request_digest_sha256": "f31952abe94e910ecf615c416385f754709fe291b4751ba871267f80780c9e78",
+        "release": "support.triage@1.1.0",
+        "release_digest_sha256": "e9852a0f729d188c542938dc437e474ea481b48615cc03178567db77daff3e9f",
+        "answers": {
+          "queue": {
+            "kind": "not_evaluated",
+            "reason": "invalid_evidence"
+          },
+          "urgent": {
+            "kind": "not_evaluated",
+            "reason": "invalid_evidence"
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "invalid_evidence"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1
+        },
+        "provider_id": null,
+        "model_id": null,
+        "returned_model_id": null,
+        "attempts": 0,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": null,
+        "created_at_unix_ms": 1790947794350,
+        "kernel_compute_ms": 1,
+        "db_claim_ms": 1,
+        "provider_latency_ms": null,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      }
+    ]
+  },
+  {
+    "check": "missing_reference_1",
+    "result": [
+      200,
+      {
+        "receipt_id": "5906374e2a829177b0520c5812d752314fb89c6b78d12bf6b34a0d8431c4e500",
+        "scope": {
+          "tenant_id": "audit-tenant-expanded",
+          "project_id": "audit-project",
+          "environment": "audit",
+          "product_id": "product-a"
+        },
+        "request_digest_sha256": "c3d755b207e367e6d284f5ce06c114f886785b7ed9a1a961d21a334bbd71f57c",
+        "release": "audit.permission@1.1.0",
+        "release_digest_sha256": "3ddfb7df4be8d1b84c14d073db65dfc8afcbfc294e83b0f99dedf54ecf0e422e",
+        "answers": {
+          "authorized": {
+            "kind": "binary",
+            "proposition": "permitted",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "accept",
+        "reason_codes": [
+          "deterministic_resolution"
+        ],
+        "evidence_revisions": {},
+        "provider_id": null,
+        "model_id": null,
+        "returned_model_id": null,
+        "attempts": 0,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": null,
+        "created_at_unix_ms": 1790947794372,
+        "kernel_compute_ms": 1,
+        "db_claim_ms": 2,
+        "provider_latency_ms": null,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      }
+    ]
+  },
+  {
+    "check": "changed_missing_reference_2",
+    "result": [
+      200,
+      {
+        "receipt_id": "5906374e2a829177b0520c5812d752314fb89c6b78d12bf6b34a0d8431c4e500",
+        "scope": {
+          "tenant_id": "audit-tenant-expanded",
+          "project_id": "audit-project",
+          "environment": "audit",
+          "product_id": "product-a"
+        },
+        "request_digest_sha256": "c3d755b207e367e6d284f5ce06c114f886785b7ed9a1a961d21a334bbd71f57c",
+        "release": "audit.permission@1.1.0",
+        "release_digest_sha256": "3ddfb7df4be8d1b84c14d073db65dfc8afcbfc294e83b0f99dedf54ecf0e422e",
+        "answers": {
+          "authorized": {
+            "kind": "binary",
+            "proposition": "permitted",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "accept",
+        "reason_codes": [
+          "deterministic_resolution"
+        ],
+        "evidence_revisions": {},
+        "provider_id": null,
+        "model_id": null,
+        "returned_model_id": null,
+        "attempts": 0,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": null,
+        "created_at_unix_ms": 1790947794372,
+        "kernel_compute_ms": 1,
+        "db_claim_ms": 2,
+        "provider_latency_ms": null,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      }
+    ]
+  },
+  {
+    "check": "product_b_usage_includes_product_a_purpose",
+    "result": [
+      200,
+      [
+        {
+          "purpose": "product-a-private",
+          "cap_nano_usd": 1000,
+          "spent_nano_usd": 0,
+          "held_nano_usd": 0,
+          "attempts_dispatch_intent": 0,
+          "attempts_uncertain": 0,
+          "attempts_reconciled": 0
+        }
+      ]
+    ]
+  },
+  {
+    "check": "unknown_request_field",
+    "result": [
+      400,
+      {
+        "error": {
+          "code": "INVALID_REQUEST",
+          "correlation_id": "dk-18dab987b91378e0-14",
+          "message": "The request is invalid",
+          "request_id": "dk-18dab987b91378e0-14",
+          "retryable": false
+        }
+      }
+    ]
+  },
+  {
+    "check": "duplicate_json_keys",
+    "result": [
+      400,
+      {
+        "error": {
+          "code": "INVALID_REQUEST",
+          "correlation_id": "dk-18dab987b95d2bb6-15",
+          "message": "The request is invalid",
+          "request_id": "dk-18dab987b95d2bb6-15",
+          "retryable": false
+        }
+      }
+    ]
+  },
+  {
+    "check": "oversized_body",
+    "result": [
+      413,
+      {
+        "error": {
+          "code": "REQUEST_FAILED",
+          "correlation_id": "dk-18dab987b99e3626-16",
+          "message": "The request could not be completed",
+          "request_id": "dk-18dab987b99e3626-16",
+          "retryable": false
+        }
+      }
+    ]
+  },
+  {
+    "check": "concurrent_equivalent_requests",
+    "result": {
+      "responses": 24,
+      "statuses": [
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "unique_receipt_ids": 1,
+      "db_receipts": "1",
+      "completed_outbox_events": "1"
+    }
+  },
+  {
+    "check": "queued_invalid_schema_accepted",
+    "result": [
+      202,
+      {
+        "job_id": "job_632cee70bbd78b3cab7830c70ae22bd8b8b36fd7ad628b21b28d15ba503bb669",
+        "status": "queued"
+      }
+    ]
+  },
+  {
+    "check": "review_records_persisted",
+    "result": "unverified-chief-risk-officer|accept"
+  },
+  {
+    "check": "unproven_verified_outcomes_persisted",
+    "result": "audit-success|t|t\naudit-success|t|t"
+  }
+]

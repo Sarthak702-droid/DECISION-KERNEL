@@ -1,0 +1,8 @@
+{
+  "audit_database_removed": true,
+  "generated_credential_file_removed": true,
+  "cargo_lock_unchanged": true,
+  "source_edits_only_preexisting": true,
+  "artifact_links_valid": true,
+  "all_20_original_gates_present": true
+}

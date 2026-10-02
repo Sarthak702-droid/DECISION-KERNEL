@@ -1,0 +1,20 @@
+=== Decision Kernel Performance Acceptance Benchmark (PRD Sec 17) ===
+Target Pack:  support.triage@1.1.0
+Content Hash: e9852a0f729d188c542938dc437e474ea481b48615cc03178567db77daff3e9f
+Nodes: 3, Edges: 0
+
+[Lane A: Pure Deterministic Core]
+Iterations:        5000
+Throughput:        8244.3 ops/sec
+Latency p50:       0.1204 ms
+Latency p95:       0.1287 ms  (Target: < 1.0 ms -> PASS)
+Latency p99:       0.1426 ms
+
+[Lane A: Audited No-Model Request (DB + Receipt Commit)]
+Iterations:        200
+Throughput:        188.0 req/sec
+Latency p50:       4.52 ms
+Latency p95:       9.36 ms  (Target: < 50.0 ms -> PASS)
+Latency p99:       11.49 ms
+
+=== Benchmark Completed Successfully ===

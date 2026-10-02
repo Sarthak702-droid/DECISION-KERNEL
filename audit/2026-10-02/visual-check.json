@@ -1,0 +1,25 @@
+{
+  "errors": [],
+  "measurements": [
+    {
+      "width": 704,
+      "rootWidth": 704,
+      "contentWidth": 704,
+      "buttons": 20
+    },
+    {
+      "width": 288,
+      "rootWidth": 288,
+      "contentWidth": 288,
+      "buttons": 20
+    },
+    {
+      "width": 992,
+      "rootWidth": 992,
+      "contentWidth": 992,
+      "buttons": 20
+    }
+  ],
+  "gateSelections": 20,
+  "status": "pass"
+}

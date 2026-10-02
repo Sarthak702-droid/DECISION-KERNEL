@@ -1,0 +1,21 @@
+     Locking 261 packages to latest Rust 1.96.0 compatible versions
+      Adding axum v0.8.4 (available: v0.8.9)
+      Adding sha2 v0.10.9 (available: v0.11.0)
+      Adding tokio v1.45.0 (available: v1.52.3)
+      Adding tokio-macros v2.5.0 (available: v2.7.0)
+   Compiling hyper v1.11.1
+   Compiling tower v0.5.3
+   Compiling axum-core v0.5.6
+   Compiling hyper-util v0.1.21
+   Compiling hyper-rustls v0.27.10
+   Compiling axum v0.8.4
+   Compiling reqwest v0.12.15
+   Compiling kernel-provider v0.1.0 (/home/soumyajeet/Projects/DECISION-KERNEL/crates/kernel-provider)
+   Compiling kernel-runtime v0.1.0 (/home/soumyajeet/Projects/DECISION-KERNEL/crates/kernel-runtime)
+   Compiling dk-head-daemon v0.1.0 (/tmp/dk-head-daemon)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 6.71s
+     Running `target/debug/dk-head-daemon`
+
+thread 'main' (238357) panicked at src/main.rs:732:10:
+Path segments must not start with `:`. For capture groups, use `{capture}`. If you meant to literally match a segment starting with a colon, call `without_v07_checks` on the router.
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

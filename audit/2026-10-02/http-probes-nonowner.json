@@ -1,0 +1,54 @@
+[
+  {
+    "check": "ready",
+    "result": [
+      200,
+      ""
+    ]
+  },
+  {
+    "check": "unauthenticated",
+    "result": [
+      401,
+      {
+        "error": {
+          "code": "UNAUTHORIZED",
+          "correlation_id": "dk-18dab9772f659b90-2",
+          "message": "Authentication is required",
+          "request_id": "dk-18dab9772f659b90-2",
+          "retryable": false
+        }
+      }
+    ]
+  },
+  {
+    "check": "other_tenant_cannot_read",
+    "result": [
+      404,
+      {
+        "error": {
+          "code": "NOT_FOUND",
+          "correlation_id": "dk-18dab9772f7ec008-3",
+          "message": "The resource was not found",
+          "request_id": "dk-18dab9772f7ec008-3",
+          "retryable": false
+        }
+      }
+    ]
+  },
+  {
+    "check": "product_a_missing_permission",
+    "result": [
+      503,
+      {
+        "error": {
+          "code": "SERVICE_UNAVAILABLE",
+          "correlation_id": "dk-18dab97732d927fd-4",
+          "message": "A required service is unavailable",
+          "request_id": "dk-18dab97732d927fd-4",
+          "retryable": true
+        }
+      }
+    ]
+  }
+]

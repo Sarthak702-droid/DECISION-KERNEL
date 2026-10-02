@@ -1,0 +1,81 @@
+advisories FAILED
+error[unmaintained]: rustls-pemfile is unmaintained
+    ┌─ /home/soumyajeet/Projects/DECISION-KERNEL/Cargo.lock:114:1
+    │
+114 │ rustls-pemfile 2.2.0 registry+https://github.com/rust-lang/crates.io-index
+    │ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ unmaintained advisory detected
+    │
+    ├ ID: RUSTSEC-2025-0134
+    ├ Advisory: https://rustsec.org/advisories/RUSTSEC-2025-0134
+    ├ The rustls-pemfile crate is no longer maintained. The repository has been archived since August
+      2025, and users are encouraged to depend directly on the underlying PEM parsing code included
+      in rustls-pki-types since 1.9.0. The latest version of rustls-pemfile is in fact a thin wrapper
+      around the same code used in rustls-pki-types, so migrating should be straightforward.
+
+      The new API is represented by the [`PemObject`][PemObject] trait, which provides methods for
+      reading a single or multiple PEM objects from a file or byte slice.
+
+      [PemObject]: https://docs.rs/rustls-pki-types/latest/rustls_pki_types/pem/trait.PemObject.html
+    ├ Announcement: https://github.com/rustls/pemfile/issues/61
+    ├ Solution: No safe upgrade is available!
+    ├ rustls-pemfile v2.2.0
+      └── reqwest v0.12.15
+          ├── kernel-provider v0.1.0
+          │   ├── kernel-runtime v0.1.0
+          │   │   ├── kernel-worker v0.1.0
+          │   │   ├── kernelctl v0.1.0
+          │   │   └── kerneld v0.1.0
+          │   ├── kernel-worker v0.1.0 (*)
+          │   └── kerneld v0.1.0 (*)
+          └── kernel-worker v0.1.0 (*)
+
+error[yanked]: detected yanked crate (try `cargo update -p yoke-derive`)
+    ┌─ /home/soumyajeet/Projects/DECISION-KERNEL/Cargo.lock:215:1
+    │
+215 │ yoke-derive 0.8.3 registry+https://github.com/rust-lang/crates.io-index
+    │ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ yanked version
+    │
+    ├ yoke-derive v0.8.3
+      └── yoke v0.8.3
+          ├── icu_collections v2.3.0
+          │   ├── icu_normalizer v2.3.0
+          │   │   └── idna_adapter v1.2.2
+          │   │       └── idna v1.1.0
+          │   │           └── url v2.5.8
+          │   │               ├── reqwest v0.12.15
+          │   │               │   ├── kernel-provider v0.1.0
+          │   │               │   │   ├── kernel-runtime v0.1.0
+          │   │               │   │   │   ├── kernel-worker v0.1.0
+          │   │               │   │   │   ├── kernelctl v0.1.0
+          │   │               │   │   │   └── kerneld v0.1.0
+          │   │               │   │   ├── kernel-worker v0.1.0 (*)
+          │   │               │   │   └── kerneld v0.1.0 (*)
+          │   │               │   └── kernel-worker v0.1.0 (*)
+          │   │               └── sqlx-core v0.8.6
+          │   │                   ├── sqlx v0.8.6
+          │   │                   │   ├── kernel-runtime v0.1.0 (*)
+          │   │                   │   ├── kernel-worker v0.1.0 (*)
+          │   │                   │   ├── kernelctl v0.1.0 (*)
+          │   │                   │   └── kerneld v0.1.0 (*)
+          │   │                   └── sqlx-postgres v0.8.6
+          │   │                       └── sqlx v0.8.6 (*)
+          │   └── icu_properties v2.3.0
+          │       └── idna_adapter v1.2.2 (*)
+          ├── icu_provider v2.3.1
+          │   ├── icu_normalizer v2.3.0 (*)
+          │   └── icu_properties v2.3.0 (*)
+          ├── zerotrie v0.2.5
+          │   ├── icu_properties v2.3.0 (*)
+          │   └── icu_provider v2.3.1 (*)
+          └── zerovec v0.11.8
+              ├── icu_collections v2.3.0 (*)
+              ├── icu_locale_core v2.3.0
+              │   ├── icu_properties v2.3.0 (*)
+              │   └── icu_provider v2.3.1 (*)
+              ├── icu_normalizer v2.3.0 (*)
+              ├── icu_properties v2.3.0 (*)
+              ├── icu_provider v2.3.1 (*)
+              ├── potential_utf v0.1.6
+              │   └── icu_collections v2.3.0 (*)
+              └── tinystr v0.8.4
+                  └── icu_locale_core v2.3.0 (*)
