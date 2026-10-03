@@ -408,6 +408,31 @@ mod tests {
             Box::pin(async { Err(ProviderError::Unavailable) })
         }
     }
+    struct RoutedProvider {
+        identity: ProviderIdentity,
+        response: SemanticResponse,
+    }
+    impl IntelligenceProvider for RoutedProvider {
+        fn identity(&self) -> ProviderIdentity {
+            self.identity.clone()
+        }
+        fn capabilities(&self) -> ProviderCapabilities {
+            ProviderCapabilities {
+                supports_batch: true,
+                max_questions: 8,
+                max_output_tokens: 100,
+            }
+        }
+        fn evaluate<'a>(
+            &'a self,
+            _: SemanticRequest,
+            _: Instant,
+        ) -> Pin<Box<dyn Future<Output = Result<SemanticResponse, ProviderError>> + Send + 'a>>
+        {
+            let response = self.response.clone();
+            Box::pin(async move { Ok(response) })
+        }
+    }
     fn setup(hard_deny: bool) -> (Engine, Arc<AtomicUsize>, Scope, DecisionRequest) {
         let pack = DecisionPack {
             api_version: "kernel/v1".into(),
@@ -556,6 +581,59 @@ mod tests {
         assert_eq!(reused.attempts, 0);
         assert!(reused.prediction_cache_hit);
         assert_eq!(reused.disposition, Disposition::Review);
+    }
+    #[tokio::test]
+    async fn routed_semantic_model_records_requested_and_served_ids() {
+        let (mut engine, _, scope, request) = setup(false);
+        let mut pack = engine.graph.pack.clone();
+        pack.nodes[1] = Node {
+            id: "semantic".into(),
+            depends_on: vec![],
+            operation: Operation::SemanticQuestion {
+                output: "yes".into(),
+                prompt: "Is it yes?".into(),
+            },
+        };
+        pack.policy.accept_deterministic = false;
+        pack.qualification.provider_id = Some("fixture".into());
+        pack.qualification.model_id = Some("requested-model".into());
+        engine.graph = Arc::new(compile(pack).unwrap());
+        engine.provider = Some(Arc::new(RoutedProvider {
+            identity: ProviderIdentity {
+                provider_id: "fixture".into(),
+                model_id: "requested-model".into(),
+                adapter_version: "1".into(),
+                allowed_returned_models: vec!["served-model".into()],
+            },
+            response: SemanticResponse {
+                answers: BTreeMap::from([(
+                    "semantic".into(),
+                    Answer::Binary {
+                        proposition: "yes".into(),
+                        value: Some(true),
+                        probability_true: None,
+                        probability_provenance: None,
+                    },
+                )]),
+                provider_id: "fixture".into(),
+                model_id: "served-model".into(),
+                reported_cost_nano_usd: None,
+            },
+        }));
+        let result = engine.decide(scope.clone(), request.clone()).await.unwrap();
+        assert_eq!(result.disposition, Disposition::Review);
+        assert_eq!(result.attempts, 1);
+        assert_eq!(result.provider_id.as_deref(), Some("fixture"));
+        assert_eq!(result.model_id.as_deref(), Some("requested-model"));
+        assert_eq!(result.returned_model_id.as_deref(), Some("served-model"));
+
+        let mut second = request;
+        second.idempotency_key = "second-routed-key".into();
+        second.constraints.max_billable_attempts = Some(0);
+        let cached = engine.decide(scope, second).await.unwrap();
+        assert!(cached.prediction_cache_hit);
+        assert_eq!(cached.attempts, 0);
+        assert_eq!(cached.returned_model_id.as_deref(), Some("served-model"));
     }
 }
 
