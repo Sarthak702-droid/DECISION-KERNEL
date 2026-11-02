@@ -1,0 +1,544 @@
+rules {"client_ms": {"p50": 6.595544999981939, "p95": 7.346614999732992, "p99": 8.365816000150517, "max": 25.823873999797797}, "engine_ms": {"p50": 0.07, "p95": 0.092, "p99": 0.11, "max": 0.169}, "db_ms": {"p50": 5.901, "p95": 6.583, "p99": 7.558, "max": 24.32}, "provider_ms": {"p50": 0.0, "p95": 0.0, "p99": 0.0, "max": 0.0}, "queue_ms": {"p50": 0.0, "p95": 0.0, "p99": 0.0, "max": 0.0}, "http_ms": {"p50": 6.048, "p95": 6.758, "p99": 7.736, "max": 24.466}, "schedule_delay_ms": {"p50": 0.17534000016894424, "p95": 0.20542999936878914, "p99": 0.23694499941484537, "max": 2.29526499970234}, "non_provider_ms": {"p50": 6.048, "p95": 6.758, "p99": 7.736, "max": 24.466}}
+cache {"client_ms": {"p50": 7.068212000376661, "p95": 8.084978000624687, "p99": 15.205841000351938, "max": 118.18858599963278}, "engine_ms": {"p50": 0.076, "p95": 0.106, "p99": 0.127, "max": 0.439}, "db_ms": {"p50": 6.36, "p95": 7.291, "p99": 11.612, "max": 76.942}, "provider_ms": {"p50": 0.0, "p95": 0.0, "p99": 0.0, "max": 0.0}, "queue_ms": {"p50": 0.001, "p95": 0.006, "p99": 0.032, "max": 55.588}, "http_ms": {"p50": 6.509, "p95": 7.489, "p99": 14.53, "max": 117.61}, "schedule_delay_ms": {"p50": 0.1773650001268834, "p95": 0.21352200019464362, "p99": 0.2902850001191837, "max": 10.698019999836106}, "non_provider_ms": {"p50": 6.509, "p95": 7.489, "p99": 14.53, "max": 117.61}}
+fresh {"client_ms": {"p50": 75.15894400057732, "p95": 378.9619799999855, "p99": 481.93739599992114, "max": 649.75805100039}, "engine_ms": {"p50": 0.132, "p95": 0.419, "p99": 1.783, "max": 18.761}, "db_ms": {"p50": 14.504, "p95": 234.647, "p99": 349.087, "max": 453.756}, "provider_ms": {"p50": 61.664, "p95": 70.866, "p99": 115.886, "max": 208.956}, "queue_ms": {"p50": 0.002, "p95": 0.013, "p99": 30.79, "max": 230.434}, "http_ms": {"p50": 74.629, "p95": 315.271, "p99": 447.161, "max": 515.526}, "schedule_delay_ms": {"p50": 0.160287000653625, "p95": 54.42334900089918, "p99": 151.72430300026463, "max": 254.71879999986413}, "non_provider_ms": {"p50": 14.915, "p95": 242.16500000000002, "p99": 358.87600000000003, "max": 454.19100000000003}}
+{
+  "workload": {
+    "requests_per_path": 3000,
+    "offered_rps": 100,
+    "driver_threads": 32,
+    "api_admission": 64,
+    "provider_concurrency": 16,
+    "db_connections": 16,
+    "provider_fixture_delay_ms": 20,
+    "http_keep_alive": true
+  },
+  "host": {
+    "platform": "Linux-7.2.6-76070206-generic-x86_64-with-glibc2.39",
+    "cpu_count": 8,
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+    "cpu": "Intel(R) Core(TM) i7-1065G7 CPU @ 1.30GHz"
+  },
+  "connection_reuse": {
+    "provider_calls": 3001,
+    "tcp_connections": 19
+  },
+  "duplicate_suppression": {
+    "requests": 16,
+    "provider_calls": 1
+  },
+  "worker": {
+    "samples": [
+      135.67433200023515,
+      92.51710599983198,
+      35.010771000088425,
+      34.70343199933268,
+      150.78173399979278,
+      32.62444299980416,
+      30.974655999671086,
+      28.638789000069664,
+      42.86431999935303,
+      31.609238999408262,
+      58.73662500016508,
+      150.88150700012193,
+      32.31584000059229,
+      48.17676299990126,
+      35.27594200022577,
+      33.49806899950636,
+      46.462008000162314,
+      150.27661599924613,
+      34.71381799954543,
+      33.95070700025826,
+      31.78026499972475,
+      35.13538900006097,
+      32.19354300017585,
+      31.0450850001871,
+      32.6128320002681,
+      35.595152000496455,
+      188.10342300002958,
+      42.91507800007821,
+      171.6464819992325,
+      51.664839000295615
+    ],
+    "enqueue_to_observed_completion_ms": {
+      "p50": 35.13538900006097,
+      "p95": 171.6464819992325,
+      "p99": 188.10342300002958,
+      "max": 188.10342300002958
+    },
+    "runtime_timings": [
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_db553ef87f697fe6295c85b08b4883f499b54e261775eb9c147876560238ccc5",
+        "success": true,
+        "timings": {
+          "database_us": 22504,
+          "engine_us": 152,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 22657
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_43ff7ea4111817a2b8fcf986f1d03cba9a96f6419faf337836d60f73817979a5",
+        "success": true,
+        "timings": {
+          "database_us": 10059,
+          "engine_us": 87,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 10147
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_60c487e10e71bbf9630e493dc1f12805ccbff61d9d044b43de24cf0e2d0af73e",
+        "success": true,
+        "timings": {
+          "database_us": 7374,
+          "engine_us": 73,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 7447
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_2b80e9c0da162171276b9774925d66dda0005a48c1f834708288779fcc5be5be",
+        "success": true,
+        "timings": {
+          "database_us": 6347,
+          "engine_us": 120,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 6467
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_23b14f229349db0c668184cdc17a5f340f074c6b19daff62b73fa21305bc2479",
+        "success": true,
+        "timings": {
+          "database_us": 8101,
+          "engine_us": 132,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 8234
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_5e236e350311c1928d10882a326731525f17a8361b58128f407ec79a5f158ada",
+        "success": true,
+        "timings": {
+          "database_us": 7549,
+          "engine_us": 91,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 7641
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_ecb63af4081604c9fee6eb5e28e9dff6a063252702f3af6ea152d214ababa2bb",
+        "success": true,
+        "timings": {
+          "database_us": 5229,
+          "engine_us": 63,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 5293
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_349aead7469ee1afc68f6738c289a8b588ad99a785c99936a939109da445ca15",
+        "success": true,
+        "timings": {
+          "database_us": 6053,
+          "engine_us": 50,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 6103
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_0915f7d1ce5ce7efbf9f4df023e710192cb0870702aafa412f13cf553cf90dbe",
+        "success": true,
+        "timings": {
+          "database_us": 8011,
+          "engine_us": 100,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 8112
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_e0f1bb093c7da18aebdca82548433cac845eed6c439131f9cc68ebff0606b48e",
+        "success": true,
+        "timings": {
+          "database_us": 8666,
+          "engine_us": 91,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 8757
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_73432544d488d239fc18cc8e400bf16796fa400edcc3c89e35e152329cefe870",
+        "success": true,
+        "timings": {
+          "database_us": 8674,
+          "engine_us": 81,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 8756
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_207d6362bedb36d85d85a6d71a9d28a6a229b4235529cf1357b5f3cc86eabc11",
+        "success": true,
+        "timings": {
+          "database_us": 9070,
+          "engine_us": 75,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 9146
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_15b7896ec60d3c0e8877f476ec2ee6297ea7a622ad2ae320bf82e5775603262d",
+        "success": true,
+        "timings": {
+          "database_us": 7101,
+          "engine_us": 139,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 7240
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_dfc567a7e5ba10a75c30486fd5c2c5aca543b6bd5af3be55db0ddfbfb414a4e9",
+        "success": true,
+        "timings": {
+          "database_us": 8290,
+          "engine_us": 79,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 8370
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_267087a95ca81792893ba93090c49fad5073cc9e1d5c9a7d5ee837344b7f2447",
+        "success": true,
+        "timings": {
+          "database_us": 7886,
+          "engine_us": 96,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 7983
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_6b45058a4faf7549f7d98ef7766672d94258be9e5488be64fdb144d49692a98d",
+        "success": true,
+        "timings": {
+          "database_us": 8487,
+          "engine_us": 76,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 8563
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_77ed6ba7405bcd53c92c93f68f2aecf3293252e3c6b283aab546b5e3b53e54f8",
+        "success": true,
+        "timings": {
+          "database_us": 9332,
+          "engine_us": 131,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 9464
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_a6f684ca7f738d2f8cfab7f56ed16c9b8299be839097dd4de953faaf64bb32ab",
+        "success": true,
+        "timings": {
+          "database_us": 7236,
+          "engine_us": 93,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 7330
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_f1c0988230d20614d2f00aba75cd4e5fad400676e5eca9d5b280cb037d26a3bd",
+        "success": true,
+        "timings": {
+          "database_us": 7755,
+          "engine_us": 92,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 7848
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_4a6bcf503999c910c1b340f4df7c9da1df019297da53bbc5e43f3492044ee48c",
+        "success": true,
+        "timings": {
+          "database_us": 6530,
+          "engine_us": 102,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 6633
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_78ad2108f524a4818db1047e6c559f8fd7b298cadb1fc2272e97f41106925e03",
+        "success": true,
+        "timings": {
+          "database_us": 6176,
+          "engine_us": 89,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 6266
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_d7cc2b608a3b638efb5e1d86680f3c9006a91097d6dd863b89c23f6d5d66a215",
+        "success": true,
+        "timings": {
+          "database_us": 8012,
+          "engine_us": 134,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 8147
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_8e87280fa8c306724ae025853e2a8fce3c1522b0ebdb16099027b36327a1bf6c",
+        "success": true,
+        "timings": {
+          "database_us": 6202,
+          "engine_us": 86,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 6288
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_6e1eb22b049985739009748bef624e777826523d7ffecd0ddcc9bc31a2f326c0",
+        "success": true,
+        "timings": {
+          "database_us": 5416,
+          "engine_us": 73,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 5489
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_a41fb4010a8c665d28d756ff7c27496f240eb4d5eb0fbe5df8a8e81fec44ef50",
+        "success": true,
+        "timings": {
+          "database_us": 6048,
+          "engine_us": 71,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 6120
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_6815e7575b9966280fdaab937bbc1c0eaee34739f7252ff37398317b3d2b2137",
+        "success": true,
+        "timings": {
+          "database_us": 8096,
+          "engine_us": 100,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 8197
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_de599410e1fe8e31a11f8c60243ea0e8a4ae374a817d06f6acfe35ba23d73dee",
+        "success": true,
+        "timings": {
+          "database_us": 12122,
+          "engine_us": 135,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 12258
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_a66e95356370b78ee1bc1ddffd379e18b4aac2726249705070bad497c9c6b8b7",
+        "success": true,
+        "timings": {
+          "database_us": 7833,
+          "engine_us": 87,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 7920
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_41ef285f63d257c3cd4942d3d738577775072861b761a7b8992cd8daf8af4440",
+        "success": true,
+        "timings": {
+          "database_us": 10489,
+          "engine_us": 88,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 10578
+        }
+      },
+      {
+        "event": "decision_job_timing",
+        "job_id": "job_49407ae5e9a1b1417189745fca0eed4e3338e8ea9d1cafd227478719701cb33d",
+        "success": true,
+        "timings": {
+          "database_us": 8303,
+          "engine_us": 84,
+          "provider_us": 0,
+          "queue_us": 0,
+          "store_calls": 3,
+          "total_us": 8388
+        }
+      }
+    ]
+  },
+  "saturation": {
+    "offered_concurrency": 64,
+    "admission": 4,
+    "provider_limit": 2,
+    "statuses": {
+      "200": 4,
+      "429": 60
+    },
+    "observed_provider_concurrency": 2,
+    "rejection_latency_ms": {
+      "p50": 89.33684800012998,
+      "p95": 130.18150800053263,
+      "p99": 135.39674000003288,
+      "max": 135.39674000003288
+    }
+  },
+  "targets": {
+    "rules": {
+      "client_ms": [
+        25,
+        50
+      ]
+    },
+    "cache": {
+      "client_ms": [
+        25,
+        50
+      ]
+    },
+    "fresh": {
+      "engine_ms": [
+        5,
+        10
+      ],
+      "non_provider_ms": [
+        25,
+        50
+      ]
+    }
+  },
+  "failures": [
+    "fresh.non_provider_ms: {'p50': 14.915, 'p95': 242.16500000000002, 'p99': 358.87600000000003, 'max': 454.19100000000003}, target p95=25, p99=50"
+  ],
+  "result": "FAIL"
+}
+
+outbox delivery disabled: KERNEL_OUTBOX_URL is unset; events remain pending
+{"event":"decision_job_timing","job_id":"job_db553ef87f697fe6295c85b08b4883f499b54e261775eb9c147876560238ccc5","success":true,"timings":{"database_us":22504,"engine_us":152,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":22657}}
+{"event":"decision_job_timing","job_id":"job_43ff7ea4111817a2b8fcf986f1d03cba9a96f6419faf337836d60f73817979a5","success":true,"timings":{"database_us":10059,"engine_us":87,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":10147}}
+{"event":"decision_job_timing","job_id":"job_60c487e10e71bbf9630e493dc1f12805ccbff61d9d044b43de24cf0e2d0af73e","success":true,"timings":{"database_us":7374,"engine_us":73,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":7447}}
+{"event":"decision_job_timing","job_id":"job_2b80e9c0da162171276b9774925d66dda0005a48c1f834708288779fcc5be5be","success":true,"timings":{"database_us":6347,"engine_us":120,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":6467}}
+{"event":"decision_job_timing","job_id":"job_23b14f229349db0c668184cdc17a5f340f074c6b19daff62b73fa21305bc2479","success":true,"timings":{"database_us":8101,"engine_us":132,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":8234}}
+{"event":"decision_job_timing","job_id":"job_5e236e350311c1928d10882a326731525f17a8361b58128f407ec79a5f158ada","success":true,"timings":{"database_us":7549,"engine_us":91,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":7641}}
+{"event":"decision_job_timing","job_id":"job_ecb63af4081604c9fee6eb5e28e9dff6a063252702f3af6ea152d214ababa2bb","success":true,"timings":{"database_us":5229,"engine_us":63,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":5293}}
+{"event":"decision_job_timing","job_id":"job_349aead7469ee1afc68f6738c289a8b588ad99a785c99936a939109da445ca15","success":true,"timings":{"database_us":6053,"engine_us":50,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":6103}}
+{"event":"decision_job_timing","job_id":"job_0915f7d1ce5ce7efbf9f4df023e710192cb0870702aafa412f13cf553cf90dbe","success":true,"timings":{"database_us":8011,"engine_us":100,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":8112}}
+{"event":"decision_job_timing","job_id":"job_e0f1bb093c7da18aebdca82548433cac845eed6c439131f9cc68ebff0606b48e","success":true,"timings":{"database_us":8666,"engine_us":91,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":8757}}
+{"event":"decision_job_timing","job_id":"job_73432544d488d239fc18cc8e400bf16796fa400edcc3c89e35e152329cefe870","success":true,"timings":{"database_us":8674,"engine_us":81,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":8756}}
+{"event":"decision_job_timing","job_id":"job_207d6362bedb36d85d85a6d71a9d28a6a229b4235529cf1357b5f3cc86eabc11","success":true,"timings":{"database_us":9070,"engine_us":75,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":9146}}
+{"event":"decision_job_timing","job_id":"job_15b7896ec60d3c0e8877f476ec2ee6297ea7a622ad2ae320bf82e5775603262d","success":true,"timings":{"database_us":7101,"engine_us":139,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":7240}}
+{"event":"decision_job_timing","job_id":"job_dfc567a7e5ba10a75c30486fd5c2c5aca543b6bd5af3be55db0ddfbfb414a4e9","success":true,"timings":{"database_us":8290,"engine_us":79,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":8370}}
+{"event":"decision_job_timing","job_id":"job_267087a95ca81792893ba93090c49fad5073cc9e1d5c9a7d5ee837344b7f2447","success":true,"timings":{"database_us":7886,"engine_us":96,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":7983}}
+{"event":"decision_job_timing","job_id":"job_6b45058a4faf7549f7d98ef7766672d94258be9e5488be64fdb144d49692a98d","success":true,"timings":{"database_us":8487,"engine_us":76,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":8563}}
+{"event":"decision_job_timing","job_id":"job_77ed6ba7405bcd53c92c93f68f2aecf3293252e3c6b283aab546b5e3b53e54f8","success":true,"timings":{"database_us":9332,"engine_us":131,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":9464}}
+{"event":"decision_job_timing","job_id":"job_a6f684ca7f738d2f8cfab7f56ed16c9b8299be839097dd4de953faaf64bb32ab","success":true,"timings":{"database_us":7236,"engine_us":93,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":7330}}
+{"event":"decision_job_timing","job_id":"job_f1c0988230d20614d2f00aba75cd4e5fad400676e5eca9d5b280cb037d26a3bd","success":true,"timings":{"database_us":7755,"engine_us":92,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":7848}}
+{"event":"decision_job_timing","job_id":"job_4a6bcf503999c910c1b340f4df7c9da1df019297da53bbc5e43f3492044ee48c","success":true,"timings":{"database_us":6530,"engine_us":102,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":6633}}
+{"event":"decision_job_timing","job_id":"job_78ad2108f524a4818db1047e6c559f8fd7b298cadb1fc2272e97f41106925e03","success":true,"timings":{"database_us":6176,"engine_us":89,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":6266}}
+{"event":"decision_job_timing","job_id":"job_d7cc2b608a3b638efb5e1d86680f3c9006a91097d6dd863b89c23f6d5d66a215","success":true,"timings":{"database_us":8012,"engine_us":134,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":8147}}
+{"event":"decision_job_timing","job_id":"job_8e87280fa8c306724ae025853e2a8fce3c1522b0ebdb16099027b36327a1bf6c","success":true,"timings":{"database_us":6202,"engine_us":86,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":6288}}
+{"event":"decision_job_timing","job_id":"job_6e1eb22b049985739009748bef624e777826523d7ffecd0ddcc9bc31a2f326c0","success":true,"timings":{"database_us":5416,"engine_us":73,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":5489}}
+{"event":"decision_job_timing","job_id":"job_a41fb4010a8c665d28d756ff7c27496f240eb4d5eb0fbe5df8a8e81fec44ef50","success":true,"timings":{"database_us":6048,"engine_us":71,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":6120}}
+{"event":"decision_job_timing","job_id":"job_6815e7575b9966280fdaab937bbc1c0eaee34739f7252ff37398317b3d2b2137","success":true,"timings":{"database_us":8096,"engine_us":100,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":8197}}
+{"event":"decision_job_timing","job_id":"job_de599410e1fe8e31a11f8c60243ea0e8a4ae374a817d06f6acfe35ba23d73dee","success":true,"timings":{"database_us":12122,"engine_us":135,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":12258}}
+{"event":"decision_job_timing","job_id":"job_a66e95356370b78ee1bc1ddffd379e18b4aac2726249705070bad497c9c6b8b7","success":true,"timings":{"database_us":7833,"engine_us":87,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":7920}}
+{"event":"decision_job_timing","job_id":"job_41ef285f63d257c3cd4942d3d738577775072861b761a7b8992cd8daf8af4440","success":true,"timings":{"database_us":10489,"engine_us":88,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":10578}}
+{"event":"decision_job_timing","job_id":"job_49407ae5e9a1b1417189745fca0eed4e3338e8ea9d1cafd227478719701cb33d","success":true,"timings":{"database_us":8303,"engine_us":84,"provider_us":0,"queue_us":0,"store_calls":3,"total_us":8388}}
+
+
+Traceback (most recent call last):
+  File "/home/sarthaktripathy/Documents/DECISION KERNEL/scripts/verify-tier3.py", line 262, in <module>
+    assert not failures, failures
+           ^^^^^^^^^^^^
+AssertionError: ["fresh.non_provider_ms: {'p50': 14.915, 'p95': 242.16500000000002, 'p99': 358.87600000000003, 'max': 454.19100000000003}, target p95=25, p99=50"]

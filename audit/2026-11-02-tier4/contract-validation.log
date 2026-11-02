@@ -1,0 +1,6 @@
+PASS docs onboarding: publish/promote, TypeScript BYOK create/probe/bind, packs and console
+PASS real HTTP application consumes typed receipt, replays idempotently and respects product isolation
+PASS authenticated/revoked reviewer, typed corrections, proof-backed outcome states and immutable receipt
+PASS held-out runner reports quality, review workload and ledger cost; rejects cross-partition group leakage
+Support integration listening on localhost
+

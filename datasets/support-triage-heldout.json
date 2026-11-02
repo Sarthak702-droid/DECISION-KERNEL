@@ -1,0 +1,586 @@
+{
+  "provenance": "Synthetic authored seed scenarios, not customer traffic; never used for qualification. Replace with consented representative held-out tickets for real pilot.",
+  "rows": [
+    {
+      "ticket_id": "heldout-001",
+      "group_id": "scenario-1",
+      "partition": "test",
+      "message": "I was charged twice for my subscription.",
+      "expected": {
+        "queue": "billing",
+        "urgent": false
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-002",
+      "group_id": "scenario-1",
+      "partition": "test",
+      "message": "Production outage, urgent help needed. I was charged twice for my subscription.",
+      "expected": {
+        "queue": "billing",
+        "urgent": true
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-003",
+      "group_id": "scenario-2",
+      "partition": "test",
+      "message": "Can you send a receipt for my last payment?",
+      "expected": {
+        "queue": "billing",
+        "urgent": false
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-004",
+      "group_id": "scenario-2",
+      "partition": "test",
+      "message": "Production outage, urgent help needed. Can you send a receipt for my last payment?",
+      "expected": {
+        "queue": "billing",
+        "urgent": true
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-005",
+      "group_id": "scenario-3",
+      "partition": "test",
+      "message": "The invoice has an incorrect tax amount.",
+      "expected": {
+        "queue": "billing",
+        "urgent": false
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-006",
+      "group_id": "scenario-3",
+      "partition": "test",
+      "message": "Production outage, urgent help needed. The invoice has an incorrect tax amount.",
+      "expected": {
+        "queue": "billing",
+        "urgent": true
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-007",
+      "group_id": "scenario-4",
+      "partition": "test",
+      "message": "Please refund my cancelled plan.",
+      "expected": {
+        "queue": "billing",
+        "urgent": false
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-008",
+      "group_id": "scenario-4",
+      "partition": "test",
+      "message": "Production outage, urgent help needed. Please refund my cancelled plan.",
+      "expected": {
+        "queue": "billing",
+        "urgent": true
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-009",
+      "group_id": "scenario-5",
+      "partition": "test",
+      "message": "The database connection times out on every query.",
+      "expected": {
+        "queue": "technical",
+        "urgent": false
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-010",
+      "group_id": "scenario-5",
+      "partition": "test",
+      "message": "Production outage, urgent help needed. The database connection times out on every query.",
+      "expected": {
+        "queue": "technical",
+        "urgent": true
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-011",
+      "group_id": "scenario-6",
+      "partition": "test",
+      "message": "Our deployment fails during startup.",
+      "expected": {
+        "queue": "technical",
+        "urgent": false
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-012",
+      "group_id": "scenario-6",
+      "partition": "test",
+      "message": "Production outage, urgent help needed. Our deployment fails during startup.",
+      "expected": {
+        "queue": "technical",
+        "urgent": true
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-013",
+      "group_id": "scenario-7",
+      "partition": "test",
+      "message": "API requests return server errors.",
+      "expected": {
+        "queue": "technical",
+        "urgent": false
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-014",
+      "group_id": "scenario-7",
+      "partition": "test",
+      "message": "Production outage, urgent help needed. API requests return server errors.",
+      "expected": {
+        "queue": "technical",
+        "urgent": true
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-015",
+      "group_id": "scenario-8",
+      "partition": "test",
+      "message": "File uploads freeze at 50 percent.",
+      "expected": {
+        "queue": "technical",
+        "urgent": false
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-016",
+      "group_id": "scenario-8",
+      "partition": "test",
+      "message": "Production outage, urgent help needed. File uploads freeze at 50 percent.",
+      "expected": {
+        "queue": "technical",
+        "urgent": true
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-017",
+      "group_id": "scenario-9",
+      "partition": "test",
+      "message": "I cannot sign in after resetting my password.",
+      "expected": {
+        "queue": "account",
+        "urgent": false
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-018",
+      "group_id": "scenario-9",
+      "partition": "test",
+      "message": "Production outage, urgent help needed. I cannot sign in after resetting my password.",
+      "expected": {
+        "queue": "account",
+        "urgent": true
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-019",
+      "group_id": "scenario-10",
+      "partition": "test",
+      "message": "Please change the email on my profile.",
+      "expected": {
+        "queue": "account",
+        "urgent": false
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-020",
+      "group_id": "scenario-10",
+      "partition": "test",
+      "message": "Production outage, urgent help needed. Please change the email on my profile.",
+      "expected": {
+        "queue": "account",
+        "urgent": true
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-021",
+      "group_id": "scenario-11",
+      "partition": "test",
+      "message": "How do I enable two factor authentication?",
+      "expected": {
+        "queue": "account",
+        "urgent": false
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-022",
+      "group_id": "scenario-11",
+      "partition": "test",
+      "message": "Production outage, urgent help needed. How do I enable two factor authentication?",
+      "expected": {
+        "queue": "account",
+        "urgent": true
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-023",
+      "group_id": "scenario-12",
+      "partition": "test",
+      "message": "My account was locked after login attempts.",
+      "expected": {
+        "queue": "account",
+        "urgent": false
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-024",
+      "group_id": "scenario-12",
+      "partition": "test",
+      "message": "Production outage, urgent help needed. My account was locked after login attempts.",
+      "expected": {
+        "queue": "account",
+        "urgent": true
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-025",
+      "group_id": "scenario-13",
+      "partition": "test",
+      "message": "What hours is your team available?",
+      "expected": {
+        "queue": "general",
+        "urgent": false
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-026",
+      "group_id": "scenario-13",
+      "partition": "test",
+      "message": "Production outage, urgent help needed. What hours is your team available?",
+      "expected": {
+        "queue": "general",
+        "urgent": true
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-027",
+      "group_id": "scenario-14",
+      "partition": "test",
+      "message": "Where can I read your documentation?",
+      "expected": {
+        "queue": "general",
+        "urgent": false
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-028",
+      "group_id": "scenario-14",
+      "partition": "test",
+      "message": "Production outage, urgent help needed. Where can I read your documentation?",
+      "expected": {
+        "queue": "general",
+        "urgent": true
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-029",
+      "group_id": "scenario-15",
+      "partition": "test",
+      "message": "Do you offer training sessions?",
+      "expected": {
+        "queue": "general",
+        "urgent": false
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-030",
+      "group_id": "scenario-15",
+      "partition": "test",
+      "message": "Production outage, urgent help needed. Do you offer training sessions?",
+      "expected": {
+        "queue": "general",
+        "urgent": true
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-031",
+      "group_id": "scenario-16",
+      "partition": "test",
+      "message": "How do I contact your sales team?",
+      "expected": {
+        "queue": "general",
+        "urgent": false
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-032",
+      "group_id": "scenario-16",
+      "partition": "test",
+      "message": "Production outage, urgent help needed. How do I contact your sales team?",
+      "expected": {
+        "queue": "general",
+        "urgent": true
+      },
+      "slice": "english_seed",
+      "label_source": "authored_scenario"
+    },
+    {
+      "ticket_id": "heldout-033",
+      "group_id": "challenge-33",
+      "partition": "test",
+      "slice": "hindi",
+      "label_source": "authored_scenario",
+      "message": "Mere card se do baar paise kate hain, refund chahiye.",
+      "expected": {
+        "queue": "billing",
+        "urgent": false
+      }
+    },
+    {
+      "ticket_id": "heldout-034",
+      "group_id": "challenge-34",
+      "partition": "test",
+      "slice": "urgent_billing",
+      "label_source": "authored_scenario",
+      "message": "Checkout is charging every customer three times right now; stop the charges.",
+      "expected": {
+        "queue": "billing",
+        "urgent": true
+      }
+    },
+    {
+      "ticket_id": "heldout-035",
+      "group_id": "challenge-35",
+      "partition": "test",
+      "slice": "mixed_intent",
+      "label_source": "authored_scenario",
+      "message": "I can log in fine, but the renewal invoice lists the wrong plan price.",
+      "expected": {
+        "queue": "billing",
+        "urgent": false
+      }
+    },
+    {
+      "ticket_id": "heldout-036",
+      "group_id": "challenge-36",
+      "partition": "test",
+      "slice": "indirect_urgency",
+      "label_source": "authored_scenario",
+      "message": "Payments are failing for all customers and today is our launch.",
+      "expected": {
+        "queue": "billing",
+        "urgent": true
+      }
+    },
+    {
+      "ticket_id": "heldout-037",
+      "group_id": "challenge-37",
+      "partition": "test",
+      "slice": "indirect_urgency",
+      "label_source": "authored_scenario",
+      "message": "All production requests have returned 500 since the deploy. Customers cannot work.",
+      "expected": {
+        "queue": "technical",
+        "urgent": true
+      }
+    },
+    {
+      "ticket_id": "heldout-038",
+      "group_id": "challenge-38",
+      "partition": "test",
+      "slice": "negated_urgency",
+      "label_source": "authored_scenario",
+      "message": "This is not urgent. A test environment upload sometimes stalls.",
+      "expected": {
+        "queue": "technical",
+        "urgent": false
+      }
+    },
+    {
+      "ticket_id": "heldout-039",
+      "group_id": "challenge-39",
+      "partition": "test",
+      "slice": "hindi",
+      "label_source": "authored_scenario",
+      "message": "Test database se connection nahi ban raha, kal dekh sakte hain.",
+      "expected": {
+        "queue": "technical",
+        "urgent": false
+      }
+    },
+    {
+      "ticket_id": "heldout-040",
+      "group_id": "challenge-40",
+      "partition": "test",
+      "slice": "mixed_intent",
+      "label_source": "authored_scenario",
+      "message": "The invoice export endpoint is down for everyone; this is an API outage, not a charge dispute.",
+      "expected": {
+        "queue": "technical",
+        "urgent": true
+      }
+    },
+    {
+      "ticket_id": "heldout-041",
+      "group_id": "challenge-41",
+      "partition": "test",
+      "slice": "security",
+      "label_source": "authored_scenario",
+      "message": "Someone changed my login email and is accessing private customer data now.",
+      "expected": {
+        "queue": "account",
+        "urgent": true
+      }
+    },
+    {
+      "ticket_id": "heldout-042",
+      "group_id": "challenge-42",
+      "partition": "test",
+      "slice": "negated_urgency",
+      "label_source": "authored_scenario",
+      "message": "Please tell me how to enable MFA next week. No breach has occurred.",
+      "expected": {
+        "queue": "account",
+        "urgent": false
+      }
+    },
+    {
+      "ticket_id": "heldout-043",
+      "group_id": "challenge-43",
+      "partition": "test",
+      "slice": "hindi",
+      "label_source": "authored_scenario",
+      "message": "Profile ka email address badalna hai, login abhi chal raha hai.",
+      "expected": {
+        "queue": "account",
+        "urgent": false
+      }
+    },
+    {
+      "ticket_id": "heldout-044",
+      "group_id": "challenge-44",
+      "partition": "test",
+      "slice": "indirect_urgency",
+      "label_source": "authored_scenario",
+      "message": "Every agent is locked out of our workspace during a live customer incident.",
+      "expected": {
+        "queue": "account",
+        "urgent": true
+      }
+    },
+    {
+      "ticket_id": "heldout-045",
+      "group_id": "challenge-45",
+      "partition": "test",
+      "slice": "short_message",
+      "label_source": "authored_scenario",
+      "message": "Where are the docs?",
+      "expected": {
+        "queue": "general",
+        "urgent": false
+      }
+    },
+    {
+      "ticket_id": "heldout-046",
+      "group_id": "challenge-46",
+      "partition": "test",
+      "slice": "explicit_deadline",
+      "label_source": "authored_scenario",
+      "message": "Urgent: the training webinar starts in five minutes and we need the joining link.",
+      "expected": {
+        "queue": "general",
+        "urgent": true
+      }
+    },
+    {
+      "ticket_id": "heldout-047",
+      "group_id": "challenge-47",
+      "partition": "test",
+      "slice": "quoted_urgency",
+      "label_source": "authored_scenario",
+      "message": "Your help article says urgent response. What are the regular office hours?",
+      "expected": {
+        "queue": "general",
+        "urgent": false
+      }
+    },
+    {
+      "ticket_id": "heldout-048",
+      "group_id": "challenge-48",
+      "partition": "test",
+      "slice": "hindi",
+      "label_source": "authored_scenario",
+      "message": "Training abhi shuru ho rahi hai, turant joining link bhejiye.",
+      "expected": {
+        "queue": "general",
+        "urgent": true
+      }
+    }
+  ],
+  "label_policy": "Primary requested action determines queue. Urgency means an active outage/security or payment incident or explicitly immediate assistance; quoted/negated urgency alone is insufficient. Authored labels are scenarios, not independently reviewed customer ground truth.",
+  "source_context": [
+    "packs/examples/support-triage.json",
+    "DECISION_RECORD_SUPPORT_TRIAGE.md"
+  ]
+}

@@ -11,6 +11,7 @@ struct Event {
     tenant: String,
     project: String,
     environment: String,
+    product: String,
     kind: String,
     payload: Value,
     generation: i64,
@@ -62,7 +63,7 @@ impl Sink {
             .json(&serde_json::json!({
                 "event_id": event.id,
                 "event_type": event.kind,
-                "scope": {"tenant_id":event.tenant,"project_id":event.project,"environment":event.environment},
+                "scope": {"tenant_id":event.tenant,"project_id":event.project,"environment":event.environment,"product_id":event.product},
                 "payload": event.payload,
             }));
         let request = if let Some(token) = &self.token {
@@ -99,7 +100,7 @@ async fn lease(
         SET status='leased',lease_owner=$1,lease_generation=o.lease_generation+1,
             lease_until=now()+interval '30 seconds',attempt_count=o.attempt_count+1
         FROM next WHERE o.event_id=next.event_id
-        RETURNING o.event_id,o.tenant_id,o.project_id,o.environment,o.event_type,
+        RETURNING o.event_id,o.tenant_id,o.project_id,o.environment,o.product_id,o.event_type,
                   o.payload,o.lease_generation,o.attempt_count",
     )
     .bind(worker_id)
@@ -112,6 +113,7 @@ async fn lease(
         tenant: row.get("tenant_id"),
         project: row.get("project_id"),
         environment: row.get("environment"),
+        product: row.get("product_id"),
         kind: row.get("event_type"),
         payload: row.get("payload"),
         generation: row.get("lease_generation"),
@@ -158,7 +160,7 @@ mod tests {
             .unwrap()
             .as_nanos();
         let id = format!("outbox-test-{unique}");
-        sqlx::query("INSERT INTO outbox_events (event_id,tenant_id,project_id,environment,event_type,payload) VALUES ($1,$2,'test','test','decision.completed','{}'::jsonb)")
+        sqlx::query("INSERT INTO outbox_events (event_id,tenant_id,project_id,environment,product_id,event_type,payload) VALUES ($1,$2,'test','test','test','decision.completed','{}'::jsonb)")
             .bind(&id).bind(&id).execute(&pool).await.unwrap();
         let first = lease(&pool, "worker-a", Some(&id)).await.unwrap().unwrap();
         assert_eq!(first.generation, 1);
@@ -186,7 +188,7 @@ mod tests {
         assert_eq!(status, "delivered");
 
         let dead_id = format!("outbox-dead-test-{unique}");
-        sqlx::query("INSERT INTO outbox_events (event_id,tenant_id,project_id,environment,event_type,payload,attempt_count) VALUES ($1,$2,'test','test','decision.completed','{}'::jsonb,7)")
+        sqlx::query("INSERT INTO outbox_events (event_id,tenant_id,project_id,environment,product_id,event_type,payload,attempt_count) VALUES ($1,$2,'test','test','test','decision.completed','{}'::jsonb,7)")
             .bind(&dead_id).bind(&dead_id).execute(&pool).await.unwrap();
         let last = lease(&pool, "worker-a", Some(&dead_id))
             .await

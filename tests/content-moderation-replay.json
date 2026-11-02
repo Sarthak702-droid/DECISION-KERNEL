@@ -1,0 +1,32 @@
+[
+  {
+    "request": {
+      "schema_version": "1.1",
+      "decision_type": "content.moderation",
+      "release": "content.moderation@1.0.0",
+      "idempotency_key": "blocked",
+      "state": {
+        "text": "hello",
+        "blocked": true
+      },
+      "evidence": [],
+      "constraints": {}
+    },
+    "expected_disposition": "deny"
+  },
+  {
+    "request": {
+      "schema_version": "1.1",
+      "decision_type": "content.moderation",
+      "release": "content.moderation@1.0.0",
+      "idempotency_key": "no-provider",
+      "state": {
+        "text": "hello",
+        "blocked": false
+      },
+      "evidence": [],
+      "constraints": {}
+    },
+    "expected_disposition": "abstain"
+  }
+]

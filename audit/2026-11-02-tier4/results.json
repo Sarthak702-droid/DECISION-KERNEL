@@ -1,0 +1,31 @@
+{
+  "checks": [
+    "docs onboarding: publish/promote, TypeScript BYOK create/probe/bind, packs and console",
+    "real HTTP application consumes typed receipt, replays idempotently and respects product isolation",
+    "authenticated/revoked reviewer, typed corrections, proof-backed outcome states and immutable receipt",
+    "held-out runner reports quality, review workload and ledger cost; rejects cross-partition group leakage"
+  ],
+  "synthetic": true,
+  "external_provider_pilot": false,
+  "openapi_validated": true,
+  "summary": {
+    "urgent_test_count": 24,
+    "urgent_missed_or_unresolved": 7,
+    "urgent_recall_all": 0.7083333333333334,
+    "provider_reported_cost_nano_usd": 3840,
+    "provider_reported_unknown_count": 0,
+    "total": 48,
+    "completed": 48,
+    "failed": 0,
+    "joint_accuracy_all": 0.1875,
+    "queue_accuracy_all": 0.25,
+    "urgent_accuracy_all": 0.8125,
+    "review_count": 48,
+    "review_rate_completed": 1,
+    "non_accept_count": 48,
+    "known_cost_nano_usd": 0,
+    "unknown_cost_count": 48,
+    "average_known_cost_nano_usd": null,
+    "attempts": 48
+  }
+}

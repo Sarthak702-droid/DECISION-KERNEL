@@ -1,0 +1,3338 @@
+{
+  "dataset": "datasets/support-triage-heldout.json",
+  "dataset_sha256": "b91b00632747731a4849286899db4ca1a0e155c7fa51d8e65dcc579d7b149268",
+  "provenance": "Synthetic authored seed scenarios, not customer traffic; never used for qualification. Replace with consented representative held-out tickets for real pilot.",
+  "epoch": 1793627199489,
+  "summary": {
+    "urgent_test_count": 24,
+    "urgent_missed_or_unresolved": 7,
+    "urgent_recall_all": 0.7083333333333334,
+    "provider_reported_cost_nano_usd": 3840,
+    "provider_reported_unknown_count": 0,
+    "total": 48,
+    "completed": 48,
+    "failed": 0,
+    "joint_accuracy_all": 0.1875,
+    "queue_accuracy_all": 0.25,
+    "urgent_accuracy_all": 0.8125,
+    "review_count": 48,
+    "review_rate_completed": 1,
+    "non_accept_count": 48,
+    "known_cost_nano_usd": 0,
+    "unknown_cost_count": 48,
+    "average_known_cost_nano_usd": null,
+    "attempts": 48
+  },
+  "slices": {
+    "english_seed": {
+      "total": 32,
+      "completed": 32,
+      "joint_correct": 8,
+      "joint_accuracy_all": 0.25,
+      "review_count": 32
+    },
+    "hindi": {
+      "total": 4,
+      "completed": 4,
+      "joint_correct": 1,
+      "joint_accuracy_all": 0.25,
+      "review_count": 4
+    },
+    "urgent_billing": {
+      "total": 1,
+      "completed": 1,
+      "joint_correct": 0,
+      "joint_accuracy_all": 0,
+      "review_count": 1
+    },
+    "mixed_intent": {
+      "total": 2,
+      "completed": 2,
+      "joint_correct": 0,
+      "joint_accuracy_all": 0,
+      "review_count": 2
+    },
+    "indirect_urgency": {
+      "total": 3,
+      "completed": 3,
+      "joint_correct": 0,
+      "joint_accuracy_all": 0,
+      "review_count": 3
+    },
+    "negated_urgency": {
+      "total": 2,
+      "completed": 2,
+      "joint_correct": 0,
+      "joint_accuracy_all": 0,
+      "review_count": 2
+    },
+    "security": {
+      "total": 1,
+      "completed": 1,
+      "joint_correct": 0,
+      "joint_accuracy_all": 0,
+      "review_count": 1
+    },
+    "short_message": {
+      "total": 1,
+      "completed": 1,
+      "joint_correct": 0,
+      "joint_accuracy_all": 0,
+      "review_count": 1
+    },
+    "explicit_deadline": {
+      "total": 1,
+      "completed": 1,
+      "joint_correct": 0,
+      "joint_accuracy_all": 0,
+      "review_count": 1
+    },
+    "quoted_urgency": {
+      "total": 1,
+      "completed": 1,
+      "joint_correct": 0,
+      "joint_accuracy_all": 0,
+      "review_count": 1
+    }
+  },
+  "queue_confusion": {
+    "billing": {
+      "billing": 0,
+      "technical": 12,
+      "account": 0,
+      "general": 0,
+      "unresolved": 0
+    },
+    "technical": {
+      "billing": 0,
+      "technical": 12,
+      "account": 0,
+      "general": 0,
+      "unresolved": 0
+    },
+    "account": {
+      "billing": 0,
+      "technical": 12,
+      "account": 0,
+      "general": 0,
+      "unresolved": 0
+    },
+    "general": {
+      "billing": 0,
+      "technical": 12,
+      "account": 0,
+      "general": 0,
+      "unresolved": 0
+    }
+  },
+  "usage_before": [
+    {
+      "purpose": "connection.test",
+      "cap_nano_usd": 10000000,
+      "spent_nano_usd": 0,
+      "held_nano_usd": 100,
+      "attempts_dispatch_intent": 0,
+      "attempts_uncertain": 1,
+      "attempts_reconciled": 0
+    },
+    {
+      "purpose": "support.triage",
+      "cap_nano_usd": 10000000,
+      "spent_nano_usd": 0,
+      "held_nano_usd": 100,
+      "attempts_dispatch_intent": 0,
+      "attempts_uncertain": 1,
+      "attempts_reconciled": 0
+    }
+  ],
+  "usage_after": [
+    {
+      "purpose": "connection.test",
+      "cap_nano_usd": 10000000,
+      "spent_nano_usd": 0,
+      "held_nano_usd": 100,
+      "attempts_dispatch_intent": 0,
+      "attempts_uncertain": 1,
+      "attempts_reconciled": 0
+    },
+    {
+      "purpose": "support.triage",
+      "cap_nano_usd": 10000000,
+      "spent_nano_usd": 0,
+      "held_nano_usd": 4900,
+      "attempts_dispatch_intent": 0,
+      "attempts_uncertain": 49,
+      "attempts_reconciled": 0
+    }
+  ],
+  "results": [
+    {
+      "ticket_id": "heldout-001",
+      "input": {
+        "ticket_id": "heldout-001",
+        "message": "I was charged twice for my subscription.",
+        "revision": 1793627199489,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "billing",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "6de7e9ca0bb42422a51dc928c82862becfd3bac90c56646433efb33bfff127a2",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "b2405fb8d2b7984e98965c6b71a1f481f7df77b850bbc7d6543b690aa5cc15cd",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199489
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627199560,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 1,
+        "provider_latency_ms": 2,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-002",
+      "input": {
+        "ticket_id": "heldout-002",
+        "message": "Production outage, urgent help needed. I was charged twice for my subscription.",
+        "revision": 1793627199490,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "billing",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "8281dd3190176b11e42d409dd3784c68f4eb91729402269ad1ddcee4ea530b40",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "330fcbf365ea86a6d6cfc85210cbfbdf5bc8049795ecbeb1215ff825df80483b",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199490
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627199601,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-003",
+      "input": {
+        "ticket_id": "heldout-003",
+        "message": "Can you send a receipt for my last payment?",
+        "revision": 1793627199491,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "billing",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "159eb499f805689946bae3d579dc9768aed4f96bc91f290b66fb68e38808ba1b",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "23acca22c37e5b07a5030f17c62a74ff93ab549be8b4a5df70c656a8c4097ed6",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199491
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627199640,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-004",
+      "input": {
+        "ticket_id": "heldout-004",
+        "message": "Production outage, urgent help needed. Can you send a receipt for my last payment?",
+        "revision": 1793627199492,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "billing",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "62c5c3374c6122faf1f4707db6c038f78f4c0710490d7df672652dad73fd4e23",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "b9ffbfc5ddb5a9929d4d934bbc867917ead5d725bf582050c5f63962c5a17ba5",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199492
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627199676,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 2,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-005",
+      "input": {
+        "ticket_id": "heldout-005",
+        "message": "The invoice has an incorrect tax amount.",
+        "revision": 1793627199493,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "billing",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "7b7ecd34662f23712e059863f04a26a820f5067c513efc80816b188ade8ea761",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "2be7ccfc0f84031b4dd90c62d8a2aab9f8d67e6f41f1d59d65607547aad7f25a",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199493
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627199713,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 1,
+        "provider_latency_ms": 2,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-006",
+      "input": {
+        "ticket_id": "heldout-006",
+        "message": "Production outage, urgent help needed. The invoice has an incorrect tax amount.",
+        "revision": 1793627199494,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "billing",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "a650cd58a9369318c14a8e9822b7398a70b45bf4985ae1533f3651630664f526",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "06c106992796d44a06fb6e9110c3bb06c1284832cb1710f3015a22ef3df2f056",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199494
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627199747,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-007",
+      "input": {
+        "ticket_id": "heldout-007",
+        "message": "Please refund my cancelled plan.",
+        "revision": 1793627199495,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "billing",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "ca98f260294d8faea674188b1268b33848889a23c0c8f8667acc8e7e6165ad8d",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "665d380a045339da38ded21e5a185dc3de3b8d69d54eaf10fe87659e3641f096",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199495
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627199790,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-008",
+      "input": {
+        "ticket_id": "heldout-008",
+        "message": "Production outage, urgent help needed. Please refund my cancelled plan.",
+        "revision": 1793627199496,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "billing",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "60fe50385b201f5a19b1a4b1f89a632b5a826767be82b3ef015fa40b236589a2",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "8062e97891d0f343bed03c8b95541c06e8b3d1df8392e7634c42763f58b2f51d",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199496
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627199830,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 2,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-009",
+      "input": {
+        "ticket_id": "heldout-009",
+        "message": "The database connection times out on every query.",
+        "revision": 1793627199497,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "technical",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "3d048a75b26e573a33c4955f9b9fce4a8fa6652215e3a426f10218191a973525",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "397d4bc00373d32e0df908791b9231b5a90335a248eabc68f4bac6dd7f55f5fd",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199497
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627199867,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 1,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": true,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-010",
+      "input": {
+        "ticket_id": "heldout-010",
+        "message": "Production outage, urgent help needed. The database connection times out on every query.",
+        "revision": 1793627199498,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "technical",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "32c365530b07ee5a90eb9b041f17149512eb80131ab1f262c261425d3c9cfbc0",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "cca9338ab2aea93d81d058d68fcf936d3a461147583139bd7184850b54c3865c",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199498
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627199901,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": true,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-011",
+      "input": {
+        "ticket_id": "heldout-011",
+        "message": "Our deployment fails during startup.",
+        "revision": 1793627199499,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "technical",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "6a72a172bc2af79e95d9276065136c0aebf6beb286e8799f02b9e7a79ab3cb75",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "e5ced6a4ec87739c620ff73053adb267a4e8cd99f1c8bf979ee8cbfd816a5825",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199499
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627199941,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 1,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": true,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-012",
+      "input": {
+        "ticket_id": "heldout-012",
+        "message": "Production outage, urgent help needed. Our deployment fails during startup.",
+        "revision": 1793627199500,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "technical",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "18314c270c3294010ecfdd9e47acad9831e7d65b904725ad1ded79058748a3e0",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "57cf382982da21c87380d9f25d65c8cb4fc5df50c77b9715fa28a0324d8fa585",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199500
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627199980,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": true,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-013",
+      "input": {
+        "ticket_id": "heldout-013",
+        "message": "API requests return server errors.",
+        "revision": 1793627199501,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "technical",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "8afa87c2f99fe4d0946bf9e988ff1c8982708f32d3bc49009f6162f4d5bd766f",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "bcbadbd68bef3f141e72d7c7bc13cfb6f5d3cf4023ddbeb37c02d4a9143fd624",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199501
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200028,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": true,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-014",
+      "input": {
+        "ticket_id": "heldout-014",
+        "message": "Production outage, urgent help needed. API requests return server errors.",
+        "revision": 1793627199502,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "technical",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "b0f4665e6affeb4c2e770e7262fb2a167bb43aaf12ad9b6c55ec3361ec35384e",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "6fd98902983f47b65aa387beaeb4e0f720e91348c2d5b08437b1897a26d4ec64",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199502
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200078,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": true,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-015",
+      "input": {
+        "ticket_id": "heldout-015",
+        "message": "File uploads freeze at 50 percent.",
+        "revision": 1793627199503,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "technical",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "756ee636c8dc5ce21b626787eadd30dc89604ff00195de3b7be470e8196239ea",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "defc7e6f1adba64e2ed92386e7105b3caef37573f95e9909f21f6fd269ac9795",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199503
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200113,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": true,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-016",
+      "input": {
+        "ticket_id": "heldout-016",
+        "message": "Production outage, urgent help needed. File uploads freeze at 50 percent.",
+        "revision": 1793627199504,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "technical",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "ceb5e57ee8566a1e29483539048e442e88ec4b027119e13b0a6a4dd8a663b805",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "5dff52d534c008f2096f11642d925ccbce8244ed9fd92cfe5fd599493c5d73b0",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199504
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200152,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 3,
+        "provider_latency_ms": 2,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": true,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-017",
+      "input": {
+        "ticket_id": "heldout-017",
+        "message": "I cannot sign in after resetting my password.",
+        "revision": 1793627199505,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "account",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "dd86663318cd45d806306badceb59ba36e84c7c441244e6ff9fc1bd5628eb8bc",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "5d895bc655d3e0d57c4a520251d0914717dc2e9c575dde1ef3a4363db42ab638",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199505
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200190,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 1,
+        "provider_latency_ms": 2,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-018",
+      "input": {
+        "ticket_id": "heldout-018",
+        "message": "Production outage, urgent help needed. I cannot sign in after resetting my password.",
+        "revision": 1793627199506,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "account",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "209a38613bb68ecc27b47fdaac494e015a19e9fdd58c53f6354d54824b8acd44",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "3aabf44b4e2853d2e91d8cabcd1885ee35fc72d40b7f122b524ffba8d0365060",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199506
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200240,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-019",
+      "input": {
+        "ticket_id": "heldout-019",
+        "message": "Please change the email on my profile.",
+        "revision": 1793627199507,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "account",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "9bb718ad723a3998dc7db1fe373d1f9191a41f53987b312ac5b9801acc2b079b",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "79c75b2d2204a91341c246a9809b8b649ad7346fd520e8e17f92b6ef60842222",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199507
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200280,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-020",
+      "input": {
+        "ticket_id": "heldout-020",
+        "message": "Production outage, urgent help needed. Please change the email on my profile.",
+        "revision": 1793627199508,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "account",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "b8f43bbc085310baa2963f3f3f624936768ef59cd6ab73b31431833214f23c7b",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "9a0f70df5cfb681fa511a0f8090075f3676b09e2d47da9012f4c7610022832a7",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199508
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200322,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 2,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-021",
+      "input": {
+        "ticket_id": "heldout-021",
+        "message": "How do I enable two factor authentication?",
+        "revision": 1793627199509,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "account",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "35e7311810451832d16b29da59352a7925df0e467473d253cce7ff4c035c9e49",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "010e2a0a1fa2585ac9a1caf9c69bc6a7838658eed2f7e46b03d73fbd81dc8166",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199509
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200361,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 1,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-022",
+      "input": {
+        "ticket_id": "heldout-022",
+        "message": "Production outage, urgent help needed. How do I enable two factor authentication?",
+        "revision": 1793627199510,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "account",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "d83e37b16f497bdad1d1d332f9754a28053ae46af03ac21ab8e9a7be5b7ff582",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "a2508eca7d091b7a49e5b9508fceb288bbfaa6f2765212d6f5fffc1f81f3a639",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199510
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200395,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-023",
+      "input": {
+        "ticket_id": "heldout-023",
+        "message": "My account was locked after login attempts.",
+        "revision": 1793627199511,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "account",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "fea141773205e754108d83b1ac58dc82aa2c339fe18abfced44667f3f5844e44",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "c8720995229bbf01c6cae9016c3b17c17e2661b605c2fc13182db968876c7287",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199511
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200433,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 2,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-024",
+      "input": {
+        "ticket_id": "heldout-024",
+        "message": "Production outage, urgent help needed. My account was locked after login attempts.",
+        "revision": 1793627199512,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "account",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "115c3d9dda298891cab0a7d112184400a8fbee03bad4e409d06d58cf18774401",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "4ca2bce5c40a923cd25af257d813ce3acb1513f646cd06f119daa900172b71e8",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199512
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200469,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 1,
+        "provider_latency_ms": 4,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-025",
+      "input": {
+        "ticket_id": "heldout-025",
+        "message": "What hours is your team available?",
+        "revision": 1793627199513,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "general",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "0a28d8ed99bcec5303833e500388908dc19c4b36131fec67d3cd0639dfed01d4",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "1a603347aa6c5875aed843d0ba668fcb90753aab5e649b0bd25a43c7b509715c",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199513
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200508,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 1,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-026",
+      "input": {
+        "ticket_id": "heldout-026",
+        "message": "Production outage, urgent help needed. What hours is your team available?",
+        "revision": 1793627199514,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "general",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "a8ecfcd5d360b510ff10ae266c8774b309de807bf5e899ecb9119f517a279b37",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "b6fb9c7d5bfb0913f7b1ae3b7622d881ccfa66ca574c5b24347af5a6ee11c055",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199514
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200549,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 1,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-027",
+      "input": {
+        "ticket_id": "heldout-027",
+        "message": "Where can I read your documentation?",
+        "revision": 1793627199515,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "general",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "cc08921a8da454d04e25da1d663bf49e8d18d85e5c53ed9c3623f64f31b8571f",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "4a6ec1cbe872103056b454c0748838a2da51d9724580119925462056bc81aedf",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199515
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200588,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-028",
+      "input": {
+        "ticket_id": "heldout-028",
+        "message": "Production outage, urgent help needed. Where can I read your documentation?",
+        "revision": 1793627199516,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "general",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "8f4e5bdc9479929f2483b0abf945cfcf7a5ee6346ba94b504f1269c0935e3234",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "5be0ed81e6450f5178339356c12464f297eeae8b0ebe8ca7422eb524cdecb427",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199516
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200626,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 4,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-029",
+      "input": {
+        "ticket_id": "heldout-029",
+        "message": "Do you offer training sessions?",
+        "revision": 1793627199517,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "general",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "f2c58fa57293d30364f5864517e59cf434040b4b4238e7d19e637ff75b52c329",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "9dcf9b6c4d642dd281825f438846c097679b14c51404f45e6011eaf781f40b10",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199517
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200664,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 1,
+        "provider_latency_ms": 2,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-030",
+      "input": {
+        "ticket_id": "heldout-030",
+        "message": "Production outage, urgent help needed. Do you offer training sessions?",
+        "revision": 1793627199518,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "general",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "ee14e2fa311cd208a59e46937fa66a841deeeffabd284f4c19618682cc611aa0",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "cc8725b1c3b3d990b98a38be749935ebdb785a6504e58155ea1c121eda5978c2",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199518
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200749,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 3,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-031",
+      "input": {
+        "ticket_id": "heldout-031",
+        "message": "How do I contact your sales team?",
+        "revision": 1793627199519,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "general",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "ba196450c54bad32afa908c2bc7ece130709b88268b92f5b04fb5524d68ec935",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "6123950a4dbbc2b6578dba25574dc03adf43ad8e3a0dfc62a3a8591a54b2f03c",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199519
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200796,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 5,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-032",
+      "input": {
+        "ticket_id": "heldout-032",
+        "message": "Production outage, urgent help needed. How do I contact your sales team?",
+        "revision": 1793627199520,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "general",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "7ceb71a28e69017fdf7b1419b76e1a8e0384c6156d8ac59928a8af308b68c700",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "917d064fea487205e165bba031671705a5d9ebc8cba5ae01435df6a502909579",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199520
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200837,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 2,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-033",
+      "input": {
+        "ticket_id": "heldout-033",
+        "message": "Mere card se do baar paise kate hain, refund chahiye.",
+        "revision": 1793627199521,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "billing",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "6f8306721ade4e58618e4348a68eed9f40a8754f8f6ba656d63da7fcae6b5735",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "86d502f95733c7a0623c62c95626c230c376c155a83eb7f25a294ee4832d4256",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199521
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200872,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 1,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-034",
+      "input": {
+        "ticket_id": "heldout-034",
+        "message": "Checkout is charging every customer three times right now; stop the charges.",
+        "revision": 1793627199522,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "billing",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "7f1eb6f403d320590892a584827b4417e61b0953c6f8aa323c3ca79488118a6f",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "69b404bd2a2934a10344c593cb05a0d9d50b57ac0e2219b0696095aa34ebee1d",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199522
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200905,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 1,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": false
+    },
+    {
+      "ticket_id": "heldout-035",
+      "input": {
+        "ticket_id": "heldout-035",
+        "message": "I can log in fine, but the renewal invoice lists the wrong plan price.",
+        "revision": 1793627199523,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "billing",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "9fa2e1398916bda78355df5b40b9d80e0007227dfbd552e25e05d98f29d365e2",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "d366f7baf3373773cdbbcf2305d5dbbf34f6153bfb0d92f3ccb9f73feafdf22b",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199523
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200940,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 1,
+        "provider_latency_ms": 5,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-036",
+      "input": {
+        "ticket_id": "heldout-036",
+        "message": "Payments are failing for all customers and today is our launch.",
+        "revision": 1793627199524,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "billing",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "0e513348e5154d503719927a6edfa4ac85a41d022ec019ab9f8500e26130b578",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "8a27cd3be1a6b356cf8fb29e91435caa40c5256edc0ea6e1042a01819ff57e99",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199524
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627200978,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 4,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": false
+    },
+    {
+      "ticket_id": "heldout-037",
+      "input": {
+        "ticket_id": "heldout-037",
+        "message": "All production requests have returned 500 since the deploy. Customers cannot work.",
+        "revision": 1793627199525,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "technical",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "e150599f05f169dd3168e47f7ff3ba2137111b9c5084119139d91896336ed4f8",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "899c180d523e1ef43b9024c32d9fe3dee89b16eef467a7869d41e0c73cbbae11",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199525
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627201016,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": true,
+      "urgent_correct": false
+    },
+    {
+      "ticket_id": "heldout-038",
+      "input": {
+        "ticket_id": "heldout-038",
+        "message": "This is not urgent. A test environment upload sometimes stalls.",
+        "revision": 1793627199526,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "technical",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "d21b424196a5d30ce112aca884ca748438bb4cd4d573ef714bc69e1c763692f5",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "9a626b9c5f585a3d431f95ef91230ba4424d5781a9f7bf3926ce9bd40230bcbf",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199526
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627201052,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 2,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": true,
+      "urgent_correct": false
+    },
+    {
+      "ticket_id": "heldout-039",
+      "input": {
+        "ticket_id": "heldout-039",
+        "message": "Test database se connection nahi ban raha, kal dekh sakte hain.",
+        "revision": 1793627199527,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "technical",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "ce1e32554f3342872d21dd7687080ff7044b1753404c8c07ef2407eb460cc504",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "c1a33e96901d4c8d4d44ba18b2232acb7148f7f6b8fa3b74c2dd2da838f81943",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199527
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627201089,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 1,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": true,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-040",
+      "input": {
+        "ticket_id": "heldout-040",
+        "message": "The invoice export endpoint is down for everyone; this is an API outage, not a charge dispute.",
+        "revision": 1793627199528,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "technical",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "803eee57853f4d0a21982ea6cf79e15996394645f5c72d923c409737ce3ba93c",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "c933f5b04c8aca81dbf2eda601ec999dbca9c11e2b3bd59b84af754162007a34",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199528
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627201126,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 1,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": true,
+      "urgent_correct": false
+    },
+    {
+      "ticket_id": "heldout-041",
+      "input": {
+        "ticket_id": "heldout-041",
+        "message": "Someone changed my login email and is accessing private customer data now.",
+        "revision": 1793627199529,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "account",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "2da254c96ef4b65b9b77f6e5559c9ad5b7c7fb64778903cd94e199cbc63c3118",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "486343a5149934d9dc127855ee83bd00062c85b7ee8ee6bc5166e40c14f21f37",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199529
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627201166,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": false
+    },
+    {
+      "ticket_id": "heldout-042",
+      "input": {
+        "ticket_id": "heldout-042",
+        "message": "Please tell me how to enable MFA next week. No breach has occurred.",
+        "revision": 1793627199530,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "account",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "c05ea6888ab0b1a5b66bdea9d6f45aa5ecd487753a609139088d163efb4a83db",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "f3844ab35752b9ff9f86bb9287dda5408893d05366d0855c6240f1ca99ecb299",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199530
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627201226,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 1,
+        "provider_latency_ms": 4,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-043",
+      "input": {
+        "ticket_id": "heldout-043",
+        "message": "Profile ka email address badalna hai, login abhi chal raha hai.",
+        "revision": 1793627199531,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "account",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "d17d63ab085f081fc5858528324967cde83c5d053b3c751419c3aac341f704eb",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "d8ae7a1a0e7117b0e4d8c7a28c3bf3a775f7d96fb68ee8f87422444b9aa554be",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199531
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627201265,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 2,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-044",
+      "input": {
+        "ticket_id": "heldout-044",
+        "message": "Every agent is locked out of our workspace during a live customer incident.",
+        "revision": 1793627199532,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "account",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "181e383c76da9595d0e19eec299c47d4dbbff81e113cc80038a2cddbc5eff70e",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "a6bd93799de34893a7c1c66678d59c7751014ca4b20a5acf1d4616f43f212835",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199532
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627201301,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": false
+    },
+    {
+      "ticket_id": "heldout-045",
+      "input": {
+        "ticket_id": "heldout-045",
+        "message": "Where are the docs?",
+        "revision": 1793627199533,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "general",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "eedd90921f1f0222ee10fa92ad595521d93970c2cf5149ebeb8e364c53e3ac1d",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "9275f5cb62aff54c04f48035c1b89ec9efe7c092e49ea75ceed355cca2fe1e6c",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199533
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627201336,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-046",
+      "input": {
+        "ticket_id": "heldout-046",
+        "message": "Urgent: the training webinar starts in five minutes and we need the joining link.",
+        "revision": 1793627199534,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "general",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "559e579bf23c19c941dbea60922ee595e36dd3188f56e5bb450541d65c7d8515",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "69c66736697f43061d3ae747fa0fc09d4d38344b440ef06c62b5f93741f9b2c0",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199534
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627201370,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 3,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": true
+    },
+    {
+      "ticket_id": "heldout-047",
+      "input": {
+        "ticket_id": "heldout-047",
+        "message": "Your help article says urgent response. What are the regular office hours?",
+        "revision": 1793627199535,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "general",
+        "urgent": false
+      },
+      "receipt": {
+        "receipt_id": "58c7066e15e941e62818fe4a6f1322d23e655d724473a3c08b12882fa42ad3f5",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "5de00d0e87e1d9316d354e1bd78e6d000354ce9c4d5bddde0c393be0331aa394",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": true,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199535
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627201405,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 3,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": false
+    },
+    {
+      "ticket_id": "heldout-048",
+      "input": {
+        "ticket_id": "heldout-048",
+        "message": "Training abhi shuru ho rahi hai, turant joining link bhejiye.",
+        "revision": 1793627199536,
+        "observed_at_unix_ms": 1793627199489
+      },
+      "expected": {
+        "queue": "general",
+        "urgent": true
+      },
+      "receipt": {
+        "receipt_id": "c2767e057ba2d630d3001492b9cee13af564dd2b2d6382b5167035b2547347f0",
+        "scope": {
+          "tenant_id": "tier4-47328d26bf5e",
+          "project_id": "test",
+          "environment": "test",
+          "product_id": "support-suite"
+        },
+        "request_digest_sha256": "4eedc0f454f5edd5c7239548503401eff0132ef4022bd963199e516bb3dd2cc0",
+        "release": "support.triage@1.2.0",
+        "release_digest_sha256": "0ca7c8ccce005e9905a8e41865b0322ddc65eee6f9f063ccf549a6c001c2f8e0",
+        "answers": {
+          "queue": {
+            "kind": "categorical",
+            "selected_id": "technical",
+            "probabilities": null,
+            "probability_provenance": null
+          },
+          "urgent": {
+            "kind": "binary",
+            "proposition": "needs_urgent_review",
+            "value": false,
+            "probability_true": null,
+            "probability_provenance": null
+          }
+        },
+        "disposition": "review",
+        "reason_codes": [
+          "unqualified_semantic"
+        ],
+        "evidence_revisions": {
+          "latest_message": 1793627199536
+        },
+        "provider_id": "support-byok",
+        "model_id": "requested-model",
+        "returned_model_id": "served-model",
+        "attempts": 1,
+        "prediction_cache_hit": false,
+        "cost_nano_usd": null,
+        "provider_reported_cost_nano_usd": 80,
+        "provider_usage": {
+          "input_tokens": 10,
+          "output_tokens": 2
+        },
+        "created_at_unix_ms": 1793627201450,
+        "kernel_compute_ms": 0,
+        "db_claim_ms": 2,
+        "provider_latency_ms": 2,
+        "db_commit_ms": null,
+        "total_latency_ms": null
+      },
+      "queue_correct": false,
+      "urgent_correct": false
+    }
+  ]
+}

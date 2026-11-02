@@ -1,0 +1,37 @@
+   Compiling kernel-runtime v0.1.0 (/home/sarthaktripathy/Documents/DECISION KERNEL/crates/kernel-runtime)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 9.09s
+     Running unittests src/lib.rs (target/debug/deps/kernel_runtime-e36450b6cc4fb09e)
+
+running 15 tests
+test tests::deterministic_answer_uses_zero_provider_calls ... ok
+test connections::tests::vault_authenticates_scope_and_ciphertext_and_randomizes_nonce ... ok
+test tests::hard_deny_dominates_and_is_idempotent ... ok
+test tests::label_only_semantic_result_stays_review_only_and_uncalibrated ... ok
+test tests::routed_semantic_model_records_requested_and_served_ids ... ok
+test tests::tier2_invalid_input_never_commits_and_preparation_is_release_bound ... ok
+test tests::tier2_nested_input_contracts_reject_wrong_types_unknown_fields_and_unbounded_schema ... ok
+test tests::tier2_evidence_type_age_integrity_and_missing_require_review ... ok
+test tests::tier2_unknown_negation_and_invalid_state_outputs_cannot_accept ... ok
+test tests::tier2_pack_validation_rejects_invalid_schema_preparation_policy_and_output_contracts ... ok
+test tests::tier2_explicit_policy_prevents_dispatch_and_overrides_failure_fallback ... ok
+test tests::tier2_old_pack_serialization_preserves_its_content_digest ... ok
+test tests::tier2_multiple_packs_and_all_dispositions_use_the_same_engine ... ok
+test performance::tests::waits_and_cancelled_operations_are_accounted_separately ... ok
+test tests::tier2_typed_semantics_reject_malformed_results_without_caching_and_fallback_explicitly ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/postgres_flow.rs (target/debug/deps/postgres_flow-e7b881facffd0931)
+
+running 1 test
+test postgres_receipts_cache_and_budget_are_scoped ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.14s
+
+     Running tests/tier0.rs (target/debug/deps/tier0-7bfded2bafb11798)
+
+running 1 test
+test isolated_credentials_cover_scope_deadlines_billing_and_recovery ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.95s
+

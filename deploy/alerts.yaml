@@ -1,0 +1,52 @@
+groups:
+  - name: decision-kernel
+    rules:
+      - alert: KernelUnavailable
+        expr: up{job="decision-kernel"} == 0
+        for: 1m
+        labels: {severity: page}
+        annotations:
+          summary: Kernel metrics unavailable; check process readiness, scrape token and PostgreSQL
+          runbook_url: docs/production-operations.md#recovery
+      - alert: KernelErrors
+        expr: rate(kernel_http_errors_total[5m]) / clamp_min(rate(kernel_http_requests_total[5m]), 0.01) > 0.01
+        for: 5m
+        labels: {severity: page}
+        annotations:
+          summary: More than 1 percent HTTP server errors; inspect request IDs and database readiness
+          runbook_url: docs/production-operations.md#recovery
+      - alert: KernelLimited
+        expr: rate(kernel_http_limited_total[5m]) > 1
+        for: 5m
+        labels: {severity: ticket}
+        annotations:
+          summary: Sustained admission rejection; inspect scoped limits and provider holds before raising capacity
+          runbook_url: docs/production-operations.md#limits
+      - alert: KernelWorkerStalled
+        expr: kernel_worker_last_progress_age_seconds > 90
+        for: 1m
+        labels: {severity: page}
+        annotations:
+          summary: Worker has stopped completing iterations; check readiness and restart the pinned worker image
+          runbook_url: docs/production-operations.md#recovery
+      - alert: KernelJobBacklog
+        expr: kernel_jobs_oldest_age_seconds > 300 or kernel_jobs_dead_letter > 0
+        for: 5m
+        labels: {severity: page}
+        annotations:
+          summary: Job delivery delayed or dead letter; inspect leases and preserve uncertain provider holds
+          runbook_url: docs/production-operations.md#recovery
+      - alert: KernelUnresolvedCharges
+        expr: kernel_attempts_unresolved > 0
+        for: 30m
+        labels: {severity: ticket}
+        annotations:
+          summary: Provider charges need invoice reconciliation; do not release holds by guessing
+          runbook_url: docs/production-operations.md#limits
+      - alert: KernelOutboxBacklog
+        expr: kernel_outbox_unresolved > 0
+        for: 15m
+        labels: {severity: ticket}
+        annotations:
+          summary: Inspect configured HTTPS outbox sink, retries and dead letters; delivery is disabled without a sink
+          runbook_url: docs/production-operations.md#recovery

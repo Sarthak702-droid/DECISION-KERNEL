@@ -1,3 +1,6 @@
+mod connections;
+mod operations;
+mod product;
 use axum::{
     Json, Router,
     body::{Body, Bytes},
@@ -9,14 +12,14 @@ use axum::{
 };
 use kernel_compiler::{CompiledDecisionGraph, compile};
 use kernel_core::{DecisionRequest, QueuedDecision, RequestLimits, Scope};
-use kernel_provider::{IntelligenceProvider, OpenAiCompatibleProvider};
+use kernel_provider::IntelligenceProvider;
 use kernel_runtime::{
     Engine, ReceiptStore,
     postgres::{EvidenceWrite, PostgresStore, scoped_transaction},
 };
 use serde_json::Value;
 use sha2::{Digest, Sha256};
-use sqlx::{PgPool, Row};
+use sqlx::Row;
 use std::{
     collections::{BTreeMap, BTreeSet, HashMap},
     env,
@@ -57,7 +60,37 @@ async fn error_contract(request: Request<Body>, next: Next) -> Response {
     });
     let correlation_id = safe_request_id(request.headers(), "x-correlation-id")
         .unwrap_or_else(|| request_id.clone());
-    let mut response = next.run(request).await;
+    let started = std::time::Instant::now();
+    let (parts, body) = request.into_parts();
+    let mut response = match tokio::time::timeout(
+        std::time::Duration::from_millis(3000),
+        axum::body::to_bytes(body, 64 * 1024),
+    )
+    .await
+    {
+        Ok(Ok(bytes)) => {
+            let requested_ms = kernel_core::strict_json(&bytes)
+                .ok()
+                .and_then(|v| v.get("constraints")?.get("deadline_ms")?.as_u64())
+                .unwrap_or(3000)
+                .min(3000);
+            let mut request = Request::from_parts(parts, Body::from(bytes));
+            request.extensions_mut().insert(started);
+            match tokio::time::timeout_at(
+                tokio::time::Instant::from_std(
+                    started + std::time::Duration::from_millis(requested_ms),
+                ),
+                next.run(request),
+            )
+            .await
+            {
+                Ok(response) => response,
+                Err(_) => StatusCode::GATEWAY_TIMEOUT.into_response(),
+            }
+        }
+        Ok(Err(_)) => StatusCode::PAYLOAD_TOO_LARGE.into_response(),
+        Err(_) => StatusCode::GATEWAY_TIMEOUT.into_response(),
+    };
     let status = response.status();
     if status.is_client_error() || status.is_server_error() {
         let (code, message, retryable) = match (status, path.as_str()) {
@@ -94,6 +127,9 @@ async fn error_contract(request: Request<Body>, next: Next) -> Response {
                     "Request capacity is temporarily full",
                     true,
                 ),
+                StatusCode::GATEWAY_TIMEOUT => {
+                    ("DEADLINE_EXCEEDED", "The request deadline expired", true)
+                }
                 StatusCode::SERVICE_UNAVAILABLE => (
                     "SERVICE_UNAVAILABLE",
                     "A required service is unavailable",
@@ -123,6 +159,26 @@ async fn error_contract(request: Request<Body>, next: Next) -> Response {
         "x-correlation-id",
         HeaderValue::from_str(&correlation_id).expect("validated correlation ID"),
     );
+    response.headers_mut().append(
+        "server-timing",
+        HeaderValue::from_str(&format!(
+            "http;dur={:.3}",
+            started.elapsed().as_secs_f64() * 1000.
+        ))
+        .expect("numeric duration"),
+    );
+    operations::observe(
+        response.status(),
+        started.elapsed(),
+        &request_id,
+        &correlation_id,
+        response
+            .headers()
+            .get_all("server-timing")
+            .iter()
+            .filter_map(|h| h.to_str().ok())
+            .collect(),
+    );
     response
 }
 
@@ -134,6 +190,7 @@ struct AppState {
     store: Arc<PostgresStore>,
     static_auth: Option<([u8; 32], Scope)>,
     request_permits: Arc<Semaphore>,
+    requests_per_minute: i32,
 }
 async fn resolve_release(
     state: &AppState,
@@ -214,8 +271,8 @@ async fn authenticated_scope(headers: &HeaderMap, state: &AppState) -> Result<Sc
         for i in 0..32 {
             diff |= got[i] ^ expected[i];
         }
-        if diff == 0 {
-            return Ok(scope.clone());
+        if diff == 0 && scope.is_valid() {
+            return operations::admit(state, scope.clone()).await;
         }
     }
     let hash = format!("{:x}", Sha256::digest(value.as_bytes()));
@@ -227,12 +284,19 @@ async fn authenticated_scope(headers: &HeaderMap, state: &AppState) -> Result<Sc
     .await
     .map_err(|_| StatusCode::SERVICE_UNAVAILABLE)?;
     match row {
-        Some(row) => Ok(Scope {
-            tenant_id: row.get("tenant_id"),
-            project_id: row.get("project_id"),
-            environment: row.get("environment"),
-            product_id: row.get("product_id"),
-        }),
+        Some(row) => {
+            let scope = Scope {
+                tenant_id: row.get("tenant_id"),
+                project_id: row.get("project_id"),
+                environment: row.get("environment"),
+                product_id: row.get("product_id"),
+            };
+            if scope.is_valid() {
+                operations::admit(state, scope).await
+            } else {
+                Err(StatusCode::UNAUTHORIZED)
+            }
+        }
         None => Err(StatusCode::UNAUTHORIZED),
     }
 }
@@ -240,22 +304,40 @@ async fn health() -> StatusCode {
     StatusCode::OK
 }
 async fn ready(State(state): State<AppState>) -> StatusCode {
-    if sqlx::query("SELECT 1")
-        .fetch_one(&state.store.pool)
-        .await
-        .is_ok()
-    {
+    if kernel_runtime::postgres::database_ready(&state.store.pool, false).await {
         StatusCode::OK
     } else {
         StatusCode::SERVICE_UNAVAILABLE
     }
 }
+
+// These storage operations include auth/release materialization CPU as well as
+// their database waits; runtime store timings have the same wall-time semantics.
+async fn measure_prelude_db<F: std::future::Future>(micros: &mut u64, future: F) -> F::Output {
+    let start = std::time::Instant::now();
+    let result = future.await;
+    *micros += start.elapsed().as_micros() as u64;
+    result
+}
+
 async fn decide(
     State(state): State<AppState>,
+    started: Option<axum::Extension<std::time::Instant>>,
     headers: HeaderMap,
     raw: Bytes,
-) -> Result<Json<kernel_core::DecisionReceipt>, StatusCode> {
-    let scope = authenticated_scope(&headers, &state).await?;
+) -> Result<Response, StatusCode> {
+    let started = started.map(|s| s.0).unwrap_or_else(std::time::Instant::now);
+    // Admission precedes authentication/release/database work. Capacity is held
+    // by the spawned attempt even if its HTTP caller disconnects.
+    let permit = state
+        .request_permits
+        .clone()
+        .try_acquire_owned()
+        .map_err(|_| StatusCode::TOO_MANY_REQUESTS)?;
+    let prelude_start = std::time::Instant::now();
+    let mut prelude_db_us = 0;
+    let scope =
+        measure_prelude_db(&mut prelude_db_us, authenticated_scope(&headers, &state)).await?;
     let body: DecisionBody = serde_json::from_value(
         kernel_core::strict_json(&raw).map_err(|_| StatusCode::BAD_REQUEST)?,
     )
@@ -285,17 +367,35 @@ async fn decide(
     {
         return Err(StatusCode::BAD_REQUEST);
     }
-    let graph = resolve_release(&state, &scope, &body.decision_type, &body.release).await?;
+    let graph = measure_prelude_db(
+        &mut prelude_db_us,
+        resolve_release(&state, &scope, &body.decision_type, &body.release),
+    )
+    .await?;
+    kernel_runtime::prepare_state(&graph, &body.state).map_err(|_| StatusCode::BAD_REQUEST)?;
+    let deadline = started
+        + std::time::Duration::from_millis(
+            3000.min(graph.pack.limits.deadline_ms)
+                .min(body.constraints.deadline_ms.unwrap_or(u64::MAX)),
+        );
+    if std::time::Instant::now() >= deadline {
+        return Err(StatusCode::GATEWAY_TIMEOUT);
+    }
     let refs: Vec<_> = body
         .evidence_refs
         .into_iter()
         .map(|r| (r.id, r.revision))
         .collect();
-    let evidence = state
-        .store
-        .load_evidence(&scope, &refs)
-        .await
-        .map_err(|_| StatusCode::SERVICE_UNAVAILABLE)?;
+    let evidence = measure_prelude_db(
+        &mut prelude_db_us,
+        tokio::time::timeout_at(
+            tokio::time::Instant::from_std(deadline),
+            state.store.load_evidence(&scope, &refs),
+        ),
+    )
+    .await
+    .map_err(|_| StatusCode::GATEWAY_TIMEOUT)?
+    .map_err(|_| StatusCode::SERVICE_UNAVAILABLE)?;
     let request = DecisionRequest {
         schema_version: body.schema_version,
         decision_type: body.decision_type,
@@ -305,18 +405,34 @@ async fn decide(
         evidence,
         constraints: body.constraints,
     };
-    let permit = state
-        .request_permits
-        .clone()
-        .try_acquire_owned()
-        .map_err(|_| StatusCode::TOO_MANY_REQUESTS)?;
     let store = Arc::new(PostgresStore {
         pool: state.store.pool.clone(),
         purpose: graph.pack.id.clone(),
     });
+    let provider = if graph.pack.nodes.iter().any(|node| {
+        matches!(
+            node.operation,
+            kernel_compiler::Operation::SemanticQuestion { .. }
+        )
+    }) {
+        measure_prelude_db(
+            &mut prelude_db_us,
+            kernel_runtime::connections::resolve(
+                &state.store.pool,
+                &scope,
+                &graph.pack.id,
+                state.provider.clone(),
+            ),
+        )
+        .await
+        .map_err(|_| StatusCode::SERVICE_UNAVAILABLE)?
+    } else {
+        None
+    };
+    let prelude_us = prelude_start.elapsed().as_micros() as u64;
     let engine = Engine {
         graph,
-        provider: state.provider.clone(),
+        provider,
         store: store as Arc<dyn ReceiptStore>,
         provider_permits: state.provider_permits.clone(),
         platform_deadline_ms: 3000,
@@ -325,14 +441,36 @@ async fn decide(
     // The bounded task owns the attempt after admission. Client cancellation cannot drop it.
     let task = tokio::spawn(async move {
         let _permit = permit;
-        engine.decide(scope, request).await
+        engine.decide_measured(scope, request, deadline).await
     });
-    match task.await.map_err(|_| StatusCode::SERVICE_UNAVAILABLE)? {
-        Ok(receipt) => Ok(Json(receipt)),
+    let (result, timings) = task.await.map_err(|_| StatusCode::SERVICE_UNAVAILABLE)?;
+    let timing_header = format!(
+        "engine;dur={:.3}, db;dur={:.3}, provider;dur={:.3}, queue;dur={:.3}, runtime;dur={:.3}, prelude;dur={:.3}",
+        (timings.engine_us + prelude_us.saturating_sub(prelude_db_us)) as f64 / 1000.,
+        (timings.database_us + prelude_db_us) as f64 / 1000.,
+        timings.provider_us as f64 / 1000.,
+        timings.queue_us as f64 / 1000.,
+        timings.total_us as f64 / 1000.,
+        prelude_us as f64 / 1000.
+    );
+    match result {
+        Ok(receipt) => {
+            let mut response = Json(receipt).into_response();
+            response.headers_mut().insert(
+                "server-timing",
+                HeaderValue::from_str(&timing_header).expect("numeric timings"),
+            );
+            response.headers_mut().insert(
+                "x-kernel-store-calls",
+                HeaderValue::from(timings.store_calls),
+            );
+            Ok(response)
+        }
         Err(kernel_runtime::RuntimeError::Conflict) => Err(StatusCode::CONFLICT),
         Err(kernel_runtime::RuntimeError::InvalidRequest) => Err(StatusCode::BAD_REQUEST),
         Err(kernel_runtime::RuntimeError::Release) => Err(StatusCode::NOT_FOUND),
         Err(kernel_runtime::RuntimeError::Store) => Err(StatusCode::SERVICE_UNAVAILABLE),
+        Err(kernel_runtime::RuntimeError::Deadline) => Err(StatusCode::GATEWAY_TIMEOUT),
     }
 }
 
@@ -346,7 +484,9 @@ async fn create_job(
         kernel_core::strict_json(&raw).map_err(|_| StatusCode::BAD_REQUEST)?,
     )
     .map_err(|_| StatusCode::BAD_REQUEST)?;
-    if body.product_id != scope.product_id
+    if body.schema_version != "1.1"
+        || body.state.len() > 128
+        || body.product_id != scope.product_id
         || body.mode != "evaluate"
         || body.execution_profile != "deferred"
         || body.evidence_refs.len() > 32
@@ -371,6 +511,7 @@ async fn create_job(
         return Err(StatusCode::BAD_REQUEST);
     }
     let graph = resolve_release(&state, &scope, &body.decision_type, &body.release).await?;
+    kernel_runtime::prepare_state(&graph, &body.state).map_err(|_| StatusCode::BAD_REQUEST)?;
     let queued = QueuedDecision {
         scope: scope.clone(),
         schema_version: body.schema_version,
@@ -544,92 +685,6 @@ async fn ingest_evidence(
     }
 }
 
-#[derive(serde::Deserialize)]
-#[serde(deny_unknown_fields)]
-struct ReviewBody {
-    reviewer_id: String,
-    disposition: String,
-    notes: Option<String>,
-}
-
-async fn post_review(
-    State(state): State<AppState>,
-    headers: HeaderMap,
-    axum::extract::Path(id): axum::extract::Path<String>,
-    raw: Bytes,
-) -> Result<StatusCode, StatusCode> {
-    let scope = authenticated_scope(&headers, &state).await?;
-    let body: ReviewBody = serde_json::from_value(
-        kernel_core::strict_json(&raw).map_err(|_| StatusCode::BAD_REQUEST)?,
-    )
-    .map_err(|_| StatusCode::BAD_REQUEST)?;
-
-    if body.reviewer_id.is_empty()
-        || body.reviewer_id.len() > 128
-        || !matches!(
-            body.disposition.as_str(),
-            "accept" | "review" | "deny" | "abstain"
-        )
-    {
-        return Err(StatusCode::BAD_REQUEST);
-    }
-    state
-        .store
-        .record_review(
-            &scope,
-            &id,
-            &body.reviewer_id,
-            &body.disposition,
-            body.notes.as_deref(),
-        )
-        .await
-        .map_err(|error| match error {
-            kernel_runtime::RuntimeError::InvalidRequest => StatusCode::NOT_FOUND,
-            _ => StatusCode::SERVICE_UNAVAILABLE,
-        })?;
-    Ok(StatusCode::CREATED)
-}
-
-#[derive(serde::Deserialize)]
-#[serde(deny_unknown_fields)]
-struct OutcomeBody {
-    outcome: String,
-    verified: Option<bool>,
-    verification_ref: Option<String>,
-}
-
-async fn post_outcome(
-    State(state): State<AppState>,
-    headers: HeaderMap,
-    axum::extract::Path(id): axum::extract::Path<String>,
-    raw: Bytes,
-) -> Result<StatusCode, StatusCode> {
-    let scope = authenticated_scope(&headers, &state).await?;
-    let body: OutcomeBody = serde_json::from_value(
-        kernel_core::strict_json(&raw).map_err(|_| StatusCode::BAD_REQUEST)?,
-    )
-    .map_err(|_| StatusCode::BAD_REQUEST)?;
-
-    if body.outcome.is_empty() || body.outcome.len() > 256 {
-        return Err(StatusCode::BAD_REQUEST);
-    }
-    state
-        .store
-        .record_outcome(
-            &scope,
-            &id,
-            &body.outcome,
-            body.verified.unwrap_or(false),
-            body.verification_ref.as_deref(),
-        )
-        .await
-        .map_err(|error| match error {
-            kernel_runtime::RuntimeError::InvalidRequest => StatusCode::NOT_FOUND,
-            _ => StatusCode::SERVICE_UNAVAILABLE,
-        })?;
-    Ok(StatusCode::CREATED)
-}
-
 async fn get_usage(
     State(state): State<AppState>,
     headers: HeaderMap,
@@ -643,8 +698,23 @@ async fn get_usage(
     Ok(Json(summaries))
 }
 
+fn capacity(name: &str, default: usize, max: usize) -> Result<usize, Box<dyn std::error::Error>> {
+    let value = match env::var(name) {
+        Ok(value) => value.parse::<usize>()?,
+        Err(env::VarError::NotPresent) => default,
+        Err(e) => return Err(e.into()),
+    };
+    if value == 0 || value > max {
+        return Err(format!("{name} must be between 1 and {max}").into());
+    }
+    Ok(value)
+}
+
 #[tokio::main]
 async fn main() {
+    if let Some(ready) = kernel_runtime::readiness_probe("127.0.0.1:8080", "KERNEL_LISTEN_ADDR") {
+        std::process::exit(if ready { 0 } else { 1 });
+    }
     if let Err(e) = run().await {
         eprintln!("kerneld startup failed: {e}");
         std::process::exit(1);
@@ -667,72 +737,74 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         }
         Err(_) => None,
     };
-    let pool = PgPool::connect(&database_url).await?;
+    let pool = sqlx::postgres::PgPoolOptions::new()
+        .max_connections(capacity("KERNEL_DB_CONNECTIONS", 16, 256)? as u32)
+        .acquire_timeout(std::time::Duration::from_secs(3))
+        .connect(&database_url)
+        .await?;
+    if !kernel_runtime::postgres::database_ready(&pool, false).await {
+        return Err("database schema or runtime privileges invalid; use a non-owner kernel_runtime login without kernel_worker membership".into());
+    }
     let store = Arc::new(PostgresStore {
         pool,
         purpose: String::new(),
     });
-    let provider: Option<Arc<dyn IntelligenceProvider>> = match env::var("KERNEL_PROVIDER_BASE_URL")
-    {
-        Ok(base) => {
-            let adapter =
-                env::var("KERNEL_PROVIDER_ADAPTER").unwrap_or_else(|_| "compatible".into());
-            let allowed_host = required("KERNEL_PROVIDER_ALLOWED_HOST");
-            let api_key = required("KERNEL_PROVIDER_API_KEY");
-            let provider_id = required("KERNEL_PROVIDER_ID");
-            let model_id = required("KERNEL_PROVIDER_MODEL");
-            let allowed_returned_models = env::var("KERNEL_PROVIDER_ALLOWED_RETURNED_MODELS")
-                .ok()
-                .filter(|value| !value.is_empty())
-                .map(|value| value.split(',').map(str::to_owned).collect::<Vec<_>>())
-                .unwrap_or_default();
-            if adapter == "system-one" {
-                if !allowed_returned_models.is_empty() {
-                    return Err("returned model allowlist requires compatible adapter".into());
-                }
-                Some(Arc::new(kernel_provider::SystemOneProvider::new(
-                    &base,
-                    &allowed_host,
-                    api_key,
-                    provider_id,
-                    model_id,
-                    512,
-                )?))
-            } else {
-                Some(Arc::new(
-                    OpenAiCompatibleProvider::new(
-                        &base,
-                        &allowed_host,
-                        api_key,
-                        provider_id,
-                        model_id,
-                        512,
-                    )?
-                    .with_allowed_returned_models(allowed_returned_models)?,
-                ))
-            }
-        }
-        Err(_) => None,
-    };
+    let provider = kernel_provider::provider_from_env()?;
     let state = AppState {
         release_cache: Arc::new(RwLock::new(HashMap::new())),
         provider,
-        provider_permits: Arc::new(Semaphore::new(16)),
+        provider_permits: Arc::new(Semaphore::new(capacity(
+            "KERNEL_PROVIDER_CONCURRENCY",
+            16,
+            256,
+        )?)),
         store,
         static_auth,
-        request_permits: Arc::new(Semaphore::new(256)),
+        requests_per_minute: capacity("KERNEL_REQUESTS_PER_MINUTE", 6000, 1_000_000)? as i32,
+        request_permits: Arc::new(Semaphore::new(capacity(
+            "KERNEL_REQUEST_CONCURRENCY",
+            256,
+            4096,
+        )?)),
     };
     let app = Router::new()
+        .route("/console", get(product::console))
+        .route("/console.js", get(product::console_js))
+        .route("/openapi.json", get(product::openapi))
+        .route("/v1/packs", get(product::packs))
         .route("/healthz", get(health))
         .route("/readyz", get(ready))
+        .route("/metrics", get(operations::metrics))
         .route("/health/live", get(health))
         .route("/health/ready", get(ready))
+        .route(
+            "/v1/provider-connections",
+            get(connections::list).post(connections::put),
+        )
+        .route(
+            "/v1/provider-connections/{id}",
+            axum::routing::delete(connections::delete),
+        )
+        .route(
+            "/v1/provider-connections/{id}/test",
+            post(connections::test),
+        )
+        .route(
+            "/v1/provider-bindings/{decision}",
+            axum::routing::put(connections::bind).delete(connections::unbind),
+        )
         .route("/v1/decisions", post(decide))
         .route("/v1/decision-jobs", post(create_job))
-        .route("/v1/decision-jobs/:id", get(get_job))
-        .route("/v1/decisions/:id", get(get_decision))
-        .route("/v1/decisions/:id/reviews", post(post_review))
-        .route("/v1/decisions/:id/outcomes", post(post_outcome))
+        .route("/v1/decision-jobs/{id}", get(get_job))
+        .route("/v1/decisions/{id}", get(get_decision))
+        .route(
+            "/v1/decisions/{id}/reviews",
+            get(product::reviews).post(product::review),
+        )
+        .route(
+            "/v1/decisions/{id}/outcomes",
+            get(product::outcomes).post(product::outcome),
+        )
         .route("/v1/evidence", post(ingest_evidence))
         .route("/v1/usage", get(get_usage))
         .layer(DefaultBodyLimit::max(64 * 1024))
@@ -741,7 +813,21 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let addr: SocketAddr = env::var("KERNEL_LISTEN_ADDR")
         .unwrap_or_else(|_| "127.0.0.1:8080".into())
         .parse()?;
-    axum::serve(tokio::net::TcpListener::bind(addr).await?, app).await?;
+    axum::serve(tokio::net::TcpListener::bind(addr).await?, app)
+        .with_graceful_shutdown(async {
+            #[cfg(unix)]
+            {
+                let mut term =
+                    tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
+                        .expect("SIGTERM handler");
+                tokio::select! { _ = tokio::signal::ctrl_c() => {}, _ = term.recv() => {} }
+            }
+            #[cfg(not(unix))]
+            {
+                let _ = tokio::signal::ctrl_c().await;
+            }
+        })
+        .await?;
     Ok(())
 }
 
@@ -749,6 +835,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
 mod tests {
     use super::*;
     use kernel_compiler::DecisionPack;
+    use sqlx::PgPool;
     use std::time::{SystemTime, UNIX_EPOCH};
 
     #[tokio::test]
@@ -806,6 +893,7 @@ mod tests {
             provider_permits: Arc::new(Semaphore::new(1)),
             store,
             static_auth: None,
+            requests_per_minute: 6000,
             request_permits: Arc::new(Semaphore::new(1)),
         };
         assert!(

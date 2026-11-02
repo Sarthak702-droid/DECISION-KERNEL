@@ -1,0 +1,65 @@
+{
+  "synthetic": true,
+  "checks": [
+    "separate non-owner API logins, readiness, protected metrics and exact request capture",
+    "atomic rate limit shared across two API replicas: exactly 3 admitted, 5 rejected",
+    "candidate promotion, stale revision rejection, pack rollback and pinned receipt replay",
+    "worker readiness and deferred execution with distinct worker database credential",
+    "stored-request digest validation, frozen-time candidate comparison and semantic contract change rejection",
+    "owner-only lifecycle access, expired cache retention and cross-product isolation",
+    "pg_dump/pg_restore drill: receipts, inputs, release pointers, outbox and uncertain financial holds preserved",
+    "read-only non-root API/worker images: baseline \u2192 candidate \u2192 rollback; readiness and exact receipt preserved",
+    "durable lifecycle block and deletion refusal while financial holds remain",
+    "stale export rejection; reconciled scope deletion removes inputs/receipts while durable block survives",
+    "deployment validation binds immutable registry images, exact commit and actual evidence bytes"
+  ],
+  "image_drill": [
+    {
+      "phase": "baseline",
+      "images": {
+        "kerneld": "sha256:df1e32f6036511efa1c974513024fb5f0c25c20dd1d43d4407fec1a6c3805b39",
+        "kernel-worker": "sha256:2b65a462f6a4af6eba7c16057a4e511e9fcb4f473bfcdd5d02bf05eb20355878",
+        "kernelctl": "sha256:f128f3cb128105447e8a24323db555f0ef539c7b08e949d3b9dab27323bf93a4"
+      },
+      "receipt_id": "13ed88b02d328e4d080ff3486ce152841e63d7c23e33a89e069f2b0ac7a92bee",
+      "ready": true
+    },
+    {
+      "phase": "candidate",
+      "images": {
+        "kerneld": "sha256:2f3963edfe825fd3de6935743bb1d61bbb8d63fb9c9e7d156253303911618aa2",
+        "kernel-worker": "sha256:13550dbb4e79033d98b15086b2cb59faa19cf2ee2d8d9947ad9276d1f0221b3a",
+        "kernelctl": "sha256:bfdfa6808391cef9c9a915304ccdcd686f7f803a3034f17e296c42e686ef44f5"
+      },
+      "receipt_id": "13ed88b02d328e4d080ff3486ce152841e63d7c23e33a89e069f2b0ac7a92bee",
+      "ready": true
+    },
+    {
+      "phase": "rollback",
+      "images": {
+        "kerneld": "sha256:df1e32f6036511efa1c974513024fb5f0c25c20dd1d43d4407fec1a6c3805b39",
+        "kernel-worker": "sha256:2b65a462f6a4af6eba7c16057a4e511e9fcb4f473bfcdd5d02bf05eb20355878",
+        "kernelctl": "sha256:f128f3cb128105447e8a24323db555f0ef539c7b08e949d3b9dab27323bf93a4"
+      },
+      "receipt_id": "13ed88b02d328e4d080ff3486ce152841e63d7c23e33a89e069f2b0ac7a92bee",
+      "ready": true
+    }
+  ],
+  "production_qualified": false,
+  "prior_tiers_passed": false,
+  "tested_commit": null,
+  "comparison_sha256": "b361e5b3b7d90e8ae93a6eea793aa4cba2b6f59764c6306915c6aaef80ef4f01",
+  "restore": {
+    "elapsed_seconds": 3.925,
+    "dump_sha256": "c14debb54db48d7f1b5745bc031e338c0a7988b2a777beed6427cdeb3a7f9b3e",
+    "bytes": 6951019,
+    "preserved_uncertain_hold": 80
+  },
+  "release_commit": null,
+  "deployment_images": {
+    "kerneld": "sha256:2f3963edfe825fd3de6935743bb1d61bbb8d63fb9c9e7d156253303911618aa2",
+    "kernel-worker": "sha256:13550dbb4e79033d98b15086b2cb59faa19cf2ee2d8d9947ad9276d1f0221b3a",
+    "kernelctl": "sha256:bfdfa6808391cef9c9a915304ccdcd686f7f803a3034f17e296c42e686ef44f5"
+  },
+  "passed": true
+}

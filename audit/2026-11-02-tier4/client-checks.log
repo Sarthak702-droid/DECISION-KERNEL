@@ -1,0 +1,18 @@
+
+> @decision-kernel/sdk@0.1.0 typecheck
+> tsc -p tsconfig.json
+
+
+> @decision-kernel/sdk@0.1.0 test
+> node test/client.test.mjs
+
+✔ headers, encoded keys, identity separation, empty success and no retry (24.764804ms)
+✔ canonical evidence and unsafe endpoint rejection (4.372226ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 33.805729

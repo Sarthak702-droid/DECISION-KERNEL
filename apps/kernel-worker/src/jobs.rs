@@ -1,12 +1,11 @@
 use kernel_compiler::{CompiledDecisionGraph, compile};
 use kernel_core::{DecisionRequest, QueuedDecision};
-use kernel_provider::{IntelligenceProvider, OpenAiCompatibleProvider, SystemOneProvider};
+use kernel_provider::IntelligenceProvider;
 use kernel_runtime::{Engine, ReceiptStore, postgres::PostgresStore};
 use serde_json::Value;
 use sha2::{Digest, Sha256};
 use sqlx::{PgPool, Row};
 use std::{
-    env,
     sync::Arc,
     time::{SystemTime, UNIX_EPOCH},
 };
@@ -34,47 +33,7 @@ pub struct Processor {
 
 impl Processor {
     pub fn from_env() -> Result<Self, Box<dyn std::error::Error>> {
-        let provider: Option<Arc<dyn IntelligenceProvider>> =
-            match env::var("KERNEL_PROVIDER_BASE_URL") {
-                Ok(base) => {
-                    let allowed_host = env::var("KERNEL_PROVIDER_ALLOWED_HOST")?;
-                    let api_key = env::var("KERNEL_PROVIDER_API_KEY")?;
-                    let provider_id = env::var("KERNEL_PROVIDER_ID")?;
-                    let model_id = env::var("KERNEL_PROVIDER_MODEL")?;
-                    let adapter =
-                        env::var("KERNEL_PROVIDER_ADAPTER").unwrap_or_else(|_| "compatible".into());
-                    if adapter == "system-one" {
-                        Some(Arc::new(SystemOneProvider::new(
-                            &base,
-                            &allowed_host,
-                            api_key,
-                            provider_id,
-                            model_id,
-                            512,
-                        )?))
-                    } else if adapter == "compatible" {
-                        let allowed = env::var("KERNEL_PROVIDER_ALLOWED_RETURNED_MODELS")
-                            .ok()
-                            .filter(|value| !value.is_empty())
-                            .map(|value| value.split(',').map(str::to_owned).collect())
-                            .unwrap_or_default();
-                        Some(Arc::new(
-                            OpenAiCompatibleProvider::new(
-                                &base,
-                                &allowed_host,
-                                api_key,
-                                provider_id,
-                                model_id,
-                                512,
-                            )?
-                            .with_allowed_returned_models(allowed)?,
-                        ))
-                    } else {
-                        return Err("unknown provider adapter".into());
-                    }
-                }
-                Err(_) => None,
-            };
+        let provider = kernel_provider::provider_from_env()?;
         let started = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
         Ok(Self {
             provider,
@@ -99,6 +58,26 @@ impl Processor {
     }
 
     async fn execute(&self, pool: &PgPool, job: &Job) -> Result<(), Box<dyn std::error::Error>> {
+        let started = std::time::Instant::now();
+        let queued: QueuedDecision = serde_json::from_value(job.request.clone())?;
+        let deadline = started
+            + std::time::Duration::from_millis(
+                60_000.min(queued.constraints.deadline_ms.unwrap_or(u64::MAX)),
+            );
+        tokio::time::timeout_at(
+            tokio::time::Instant::from_std(deadline),
+            self.execute_inner(pool, job, started),
+        )
+        .await
+        .unwrap_or_else(|_| Err("job deadline exceeded".into()))
+    }
+
+    async fn execute_inner(
+        &self,
+        pool: &PgPool,
+        job: &Job,
+        started: std::time::Instant,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         let digest = format!("{:x}", Sha256::digest(serde_json::to_vec(&job.request)?));
         if digest != job.request_digest {
             return Err("job payload digest mismatch".into());
@@ -132,13 +111,21 @@ impl Processor {
         {
             return Err("pinned release integrity failure".into());
         }
+        let deadline = started
+            + std::time::Duration::from_millis(
+                60_000
+                    .min(graph.pack.limits.deadline_ms)
+                    .min(queued.constraints.deadline_ms.unwrap_or(u64::MAX)),
+            );
         let store = Arc::new(PostgresStore {
             pool: pool.clone(),
             purpose: queued.decision_type.clone(),
         });
-        let evidence = store
-            .load_evidence(&queued.scope, &queued.evidence_refs)
-            .await?;
+        let evidence = tokio::time::timeout_at(
+            tokio::time::Instant::from_std(deadline),
+            store.load_evidence(&queued.scope, &queued.evidence_refs),
+        )
+        .await??;
         let request = DecisionRequest {
             schema_version: queued.schema_version.clone(),
             decision_type: queued.decision_type.clone(),
@@ -148,15 +135,30 @@ impl Processor {
             evidence,
             constraints: queued.constraints.clone(),
         };
+        let provider = kernel_runtime::connections::resolve(
+            pool,
+            &queued.scope,
+            &queued.decision_type,
+            self.provider.clone(),
+        )
+        .await?;
         let engine = Engine {
             graph: Arc::new(graph),
-            provider: self.provider.clone(),
+            provider,
             store: store as Arc<dyn ReceiptStore>,
             provider_permits: self.permits.clone(),
             platform_deadline_ms: 60_000,
             platform_max_cost_nano_usd: 1_000_000,
         };
-        engine.decide(queued.scope.clone(), request).await?;
+        let (result, timings) = engine
+            .decide_measured(queued.scope.clone(), request, deadline)
+            .await;
+        eprintln!(
+            "{}",
+            serde_json::json!({"event": "decision_job_timing", "job_id": job.id,
+            "timings": timings, "success": result.is_ok()})
+        );
+        result?;
         Ok(())
     }
 }
@@ -228,6 +230,7 @@ mod tests {
     use super::*;
     use kernel_compiler::DecisionPack;
     use kernel_core::{Disposition, RequestLimits, Scope};
+    use std::env;
 
     #[tokio::test]
     async fn queued_decision_pins_release_and_commits_receipt() {

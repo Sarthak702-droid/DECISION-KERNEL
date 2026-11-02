@@ -1,0 +1,541 @@
+{
+  "baseline_digest": "ffed73b0e7466273be8208a672b1fcb5f9501949feb2c33d16bc2486ad4e66bc",
+  "candidate_digest": "bb5606a62ceddb16c11b7a4a8ed1b6d1402ab137ddec3a0dfb817be27558b056",
+  "changed": 6,
+  "compared": 6,
+  "excluded_receipts": 1,
+  "export_digest_sha256": "ca10ccf51ffd4b3ad06af54da2b44885050004fcedbf71d3d808bff7b68399a8",
+  "offline_policy_simulation": true,
+  "rows": [
+    {
+      "baseline": {
+        "answers": {
+          "ok": {
+            "kind": "binary",
+            "probability_provenance": null,
+            "probability_true": null,
+            "proposition": "ok",
+            "value": true
+          }
+        },
+        "attempts": 0,
+        "cost_nano_usd": 0,
+        "created_at_unix_ms": 1793627192402,
+        "db_claim_ms": 0,
+        "db_commit_ms": null,
+        "disposition": "accept",
+        "evidence_revisions": {},
+        "kernel_compute_ms": 0,
+        "model_id": null,
+        "prediction_cache_hit": false,
+        "provider_id": null,
+        "provider_latency_ms": null,
+        "provider_reported_cost_nano_usd": null,
+        "provider_usage": null,
+        "reason_codes": [
+          "deterministic_resolution"
+        ],
+        "receipt_id": "rec_pure_stable",
+        "release": "ops.drill@1",
+        "release_digest_sha256": "ffed73b0e7466273be8208a672b1fcb5f9501949feb2c33d16bc2486ad4e66bc",
+        "request_digest_sha256": "9530b7aa7a553b667d10f6b7639fd8141c7f854ced68bd27de219e4a3c1e22e3",
+        "returned_model_id": null,
+        "scope": {
+          "environment": "test",
+          "product_id": "product",
+          "project_id": "project",
+          "tenant_id": "tier5-997b88a685b9"
+        },
+        "total_latency_ms": 0
+      },
+      "candidate": {
+        "answers": {
+          "ok": {
+            "kind": "binary",
+            "probability_provenance": null,
+            "probability_true": null,
+            "proposition": "ok",
+            "value": true
+          }
+        },
+        "attempts": 0,
+        "cost_nano_usd": 0,
+        "created_at_unix_ms": 1793627192402,
+        "db_claim_ms": 0,
+        "db_commit_ms": null,
+        "disposition": "review",
+        "evidence_revisions": {},
+        "kernel_compute_ms": 0,
+        "model_id": null,
+        "prediction_cache_hit": false,
+        "provider_id": null,
+        "provider_latency_ms": null,
+        "provider_reported_cost_nano_usd": null,
+        "provider_usage": null,
+        "reason_codes": [
+          "not_evaluated"
+        ],
+        "receipt_id": "rec_pure_stable",
+        "release": "ops.drill@2",
+        "release_digest_sha256": "bb5606a62ceddb16c11b7a4a8ed1b6d1402ab137ddec3a0dfb817be27558b056",
+        "request_digest_sha256": "4f74e1a65e2839969424077192534a1e90a78844541991f67e1483d7b908a748",
+        "returned_model_id": null,
+        "scope": {
+          "environment": "test",
+          "product_id": "product",
+          "project_id": "project",
+          "tenant_id": "tier5-997b88a685b9"
+        },
+        "total_latency_ms": 0
+      },
+      "changed": true,
+      "key": "stable",
+      "observed_at_unix_ms": 1793627192402,
+      "source_disposition": "accept",
+      "source_receipt_id": "01835c6dd989a2527b9b9c8bb6e5bfd6459f1d14b34087a61ae5c2b73a25621e",
+      "source_request_digest_sha256": "9ff11205d20364956687ba4aee3fff1308544c0bef1cdee9ba5547ff146600e8"
+    },
+    {
+      "baseline": {
+        "answers": {
+          "ok": {
+            "kind": "binary",
+            "probability_provenance": null,
+            "probability_true": null,
+            "proposition": "ok",
+            "value": true
+          }
+        },
+        "attempts": 0,
+        "cost_nano_usd": 0,
+        "created_at_unix_ms": 1793627192597,
+        "db_claim_ms": 0,
+        "db_commit_ms": null,
+        "disposition": "accept",
+        "evidence_revisions": {},
+        "kernel_compute_ms": 0,
+        "model_id": null,
+        "prediction_cache_hit": false,
+        "provider_id": null,
+        "provider_latency_ms": null,
+        "provider_reported_cost_nano_usd": null,
+        "provider_usage": null,
+        "reason_codes": [
+          "deterministic_resolution"
+        ],
+        "receipt_id": "rec_pure_limit-3",
+        "release": "ops.drill@1",
+        "release_digest_sha256": "ffed73b0e7466273be8208a672b1fcb5f9501949feb2c33d16bc2486ad4e66bc",
+        "request_digest_sha256": "28e91a29e2f723acb3315fb6f3f9cfef2986ba3f46362554cdfdfc7ea0ab8cb4",
+        "returned_model_id": null,
+        "scope": {
+          "environment": "test",
+          "product_id": "product",
+          "project_id": "project",
+          "tenant_id": "tier5-997b88a685b9"
+        },
+        "total_latency_ms": 0
+      },
+      "candidate": {
+        "answers": {
+          "ok": {
+            "kind": "binary",
+            "probability_provenance": null,
+            "probability_true": null,
+            "proposition": "ok",
+            "value": true
+          }
+        },
+        "attempts": 0,
+        "cost_nano_usd": 0,
+        "created_at_unix_ms": 1793627192597,
+        "db_claim_ms": 0,
+        "db_commit_ms": null,
+        "disposition": "review",
+        "evidence_revisions": {},
+        "kernel_compute_ms": 0,
+        "model_id": null,
+        "prediction_cache_hit": false,
+        "provider_id": null,
+        "provider_latency_ms": null,
+        "provider_reported_cost_nano_usd": null,
+        "provider_usage": null,
+        "reason_codes": [
+          "not_evaluated"
+        ],
+        "receipt_id": "rec_pure_limit-3",
+        "release": "ops.drill@2",
+        "release_digest_sha256": "bb5606a62ceddb16c11b7a4a8ed1b6d1402ab137ddec3a0dfb817be27558b056",
+        "request_digest_sha256": "3dad7cf9029338ebe3d2ec495b4bd803366816d120478c4ab26870de1c11e096",
+        "returned_model_id": null,
+        "scope": {
+          "environment": "test",
+          "product_id": "product",
+          "project_id": "project",
+          "tenant_id": "tier5-997b88a685b9"
+        },
+        "total_latency_ms": 0
+      },
+      "changed": true,
+      "key": "limit-3",
+      "observed_at_unix_ms": 1793627192597,
+      "source_disposition": "accept",
+      "source_receipt_id": "914bba4911853094a840422f0c87bcf2b0c4afc4c82cb4c9695bc3b349337da2",
+      "source_request_digest_sha256": "12e3df0255110536b9c3562ff2861c35fc97bb0e1f7abf97e58c71dc79b8c375"
+    },
+    {
+      "baseline": {
+        "answers": {
+          "ok": {
+            "kind": "binary",
+            "probability_provenance": null,
+            "probability_true": null,
+            "proposition": "ok",
+            "value": true
+          }
+        },
+        "attempts": 0,
+        "cost_nano_usd": 0,
+        "created_at_unix_ms": 1793627192598,
+        "db_claim_ms": 0,
+        "db_commit_ms": null,
+        "disposition": "accept",
+        "evidence_revisions": {},
+        "kernel_compute_ms": 0,
+        "model_id": null,
+        "prediction_cache_hit": false,
+        "provider_id": null,
+        "provider_latency_ms": null,
+        "provider_reported_cost_nano_usd": null,
+        "provider_usage": null,
+        "reason_codes": [
+          "deterministic_resolution"
+        ],
+        "receipt_id": "rec_pure_limit-7",
+        "release": "ops.drill@1",
+        "release_digest_sha256": "ffed73b0e7466273be8208a672b1fcb5f9501949feb2c33d16bc2486ad4e66bc",
+        "request_digest_sha256": "c4b685ba663f8b2bc755aaf3e2ff208d393ee7aef9e79c85b1bce247293d9fcc",
+        "returned_model_id": null,
+        "scope": {
+          "environment": "test",
+          "product_id": "product",
+          "project_id": "project",
+          "tenant_id": "tier5-997b88a685b9"
+        },
+        "total_latency_ms": 0
+      },
+      "candidate": {
+        "answers": {
+          "ok": {
+            "kind": "binary",
+            "probability_provenance": null,
+            "probability_true": null,
+            "proposition": "ok",
+            "value": true
+          }
+        },
+        "attempts": 0,
+        "cost_nano_usd": 0,
+        "created_at_unix_ms": 1793627192598,
+        "db_claim_ms": 0,
+        "db_commit_ms": null,
+        "disposition": "review",
+        "evidence_revisions": {},
+        "kernel_compute_ms": 0,
+        "model_id": null,
+        "prediction_cache_hit": false,
+        "provider_id": null,
+        "provider_latency_ms": null,
+        "provider_reported_cost_nano_usd": null,
+        "provider_usage": null,
+        "reason_codes": [
+          "not_evaluated"
+        ],
+        "receipt_id": "rec_pure_limit-7",
+        "release": "ops.drill@2",
+        "release_digest_sha256": "bb5606a62ceddb16c11b7a4a8ed1b6d1402ab137ddec3a0dfb817be27558b056",
+        "request_digest_sha256": "7524dd729555f28147b74a1f45c123260bbaeebc01f53555fdfa7652b6cec375",
+        "returned_model_id": null,
+        "scope": {
+          "environment": "test",
+          "product_id": "product",
+          "project_id": "project",
+          "tenant_id": "tier5-997b88a685b9"
+        },
+        "total_latency_ms": 0
+      },
+      "changed": true,
+      "key": "limit-7",
+      "observed_at_unix_ms": 1793627192598,
+      "source_disposition": "accept",
+      "source_receipt_id": "b7866b742f76f640a57fe5e5cde236fcdd28e3201aec221539c8112973429a59",
+      "source_request_digest_sha256": "705205308e51e981e0fb402722e2e60a23377ae84c88fa27286dd30bcbd362c2"
+    },
+    {
+      "baseline": {
+        "answers": {
+          "ok": {
+            "kind": "binary",
+            "probability_provenance": null,
+            "probability_true": null,
+            "proposition": "ok",
+            "value": true
+          }
+        },
+        "attempts": 0,
+        "cost_nano_usd": 0,
+        "created_at_unix_ms": 1793627192574,
+        "db_claim_ms": 0,
+        "db_commit_ms": null,
+        "disposition": "accept",
+        "evidence_revisions": {},
+        "kernel_compute_ms": 0,
+        "model_id": null,
+        "prediction_cache_hit": false,
+        "provider_id": null,
+        "provider_latency_ms": null,
+        "provider_reported_cost_nano_usd": null,
+        "provider_usage": null,
+        "reason_codes": [
+          "deterministic_resolution"
+        ],
+        "receipt_id": "rec_pure_limit-0",
+        "release": "ops.drill@1",
+        "release_digest_sha256": "ffed73b0e7466273be8208a672b1fcb5f9501949feb2c33d16bc2486ad4e66bc",
+        "request_digest_sha256": "1a5b0ae3aed843de75e753895e13832aaef06624693787520c9fd7ced00e1fb2",
+        "returned_model_id": null,
+        "scope": {
+          "environment": "test",
+          "product_id": "product",
+          "project_id": "project",
+          "tenant_id": "tier5-997b88a685b9"
+        },
+        "total_latency_ms": 0
+      },
+      "candidate": {
+        "answers": {
+          "ok": {
+            "kind": "binary",
+            "probability_provenance": null,
+            "probability_true": null,
+            "proposition": "ok",
+            "value": true
+          }
+        },
+        "attempts": 0,
+        "cost_nano_usd": 0,
+        "created_at_unix_ms": 1793627192574,
+        "db_claim_ms": 0,
+        "db_commit_ms": null,
+        "disposition": "review",
+        "evidence_revisions": {},
+        "kernel_compute_ms": 0,
+        "model_id": null,
+        "prediction_cache_hit": false,
+        "provider_id": null,
+        "provider_latency_ms": null,
+        "provider_reported_cost_nano_usd": null,
+        "provider_usage": null,
+        "reason_codes": [
+          "not_evaluated"
+        ],
+        "receipt_id": "rec_pure_limit-0",
+        "release": "ops.drill@2",
+        "release_digest_sha256": "bb5606a62ceddb16c11b7a4a8ed1b6d1402ab137ddec3a0dfb817be27558b056",
+        "request_digest_sha256": "347ccf874d328f1f36467b3b22f2ce450d1508c9b4faf5db775161f6a81bfb70",
+        "returned_model_id": null,
+        "scope": {
+          "environment": "test",
+          "product_id": "product",
+          "project_id": "project",
+          "tenant_id": "tier5-997b88a685b9"
+        },
+        "total_latency_ms": 0
+      },
+      "changed": true,
+      "key": "limit-0",
+      "observed_at_unix_ms": 1793627192574,
+      "source_disposition": "accept",
+      "source_receipt_id": "d1cf5ac5b4c46db9e53c6d5a2a39b13c318c9cf0d68069d578f8380e92d6a2fe",
+      "source_request_digest_sha256": "e2278f48d0e2e493a7299ab7fef21ce43934c6231fc2adb2b77fe631bd152a3f"
+    },
+    {
+      "baseline": {
+        "answers": {
+          "ok": {
+            "kind": "binary",
+            "probability_provenance": null,
+            "probability_true": null,
+            "proposition": "ok",
+            "value": true
+          }
+        },
+        "attempts": 0,
+        "cost_nano_usd": 0,
+        "created_at_unix_ms": 1793627192823,
+        "db_claim_ms": 0,
+        "db_commit_ms": null,
+        "disposition": "accept",
+        "evidence_revisions": {},
+        "kernel_compute_ms": 0,
+        "model_id": null,
+        "prediction_cache_hit": false,
+        "provider_id": null,
+        "provider_latency_ms": null,
+        "provider_reported_cost_nano_usd": null,
+        "provider_usage": null,
+        "reason_codes": [
+          "deterministic_resolution"
+        ],
+        "receipt_id": "rec_pure_rollback",
+        "release": "ops.drill@1",
+        "release_digest_sha256": "ffed73b0e7466273be8208a672b1fcb5f9501949feb2c33d16bc2486ad4e66bc",
+        "request_digest_sha256": "6d42fe9f82026ef37b9e5d81280516e19c4b2593d63a595ed1b9fb579ffe09d7",
+        "returned_model_id": null,
+        "scope": {
+          "environment": "test",
+          "product_id": "product",
+          "project_id": "project",
+          "tenant_id": "tier5-997b88a685b9"
+        },
+        "total_latency_ms": 0
+      },
+      "candidate": {
+        "answers": {
+          "ok": {
+            "kind": "binary",
+            "probability_provenance": null,
+            "probability_true": null,
+            "proposition": "ok",
+            "value": true
+          }
+        },
+        "attempts": 0,
+        "cost_nano_usd": 0,
+        "created_at_unix_ms": 1793627192823,
+        "db_claim_ms": 0,
+        "db_commit_ms": null,
+        "disposition": "review",
+        "evidence_revisions": {},
+        "kernel_compute_ms": 0,
+        "model_id": null,
+        "prediction_cache_hit": false,
+        "provider_id": null,
+        "provider_latency_ms": null,
+        "provider_reported_cost_nano_usd": null,
+        "provider_usage": null,
+        "reason_codes": [
+          "not_evaluated"
+        ],
+        "receipt_id": "rec_pure_rollback",
+        "release": "ops.drill@2",
+        "release_digest_sha256": "bb5606a62ceddb16c11b7a4a8ed1b6d1402ab137ddec3a0dfb817be27558b056",
+        "request_digest_sha256": "3a0d678fe2bdcb5b2c4a7b2b70f2972995324c82b665d669d6391209b00c13f0",
+        "returned_model_id": null,
+        "scope": {
+          "environment": "test",
+          "product_id": "product",
+          "project_id": "project",
+          "tenant_id": "tier5-997b88a685b9"
+        },
+        "total_latency_ms": 0
+      },
+      "changed": true,
+      "key": "rollback",
+      "observed_at_unix_ms": 1793627192823,
+      "source_disposition": "accept",
+      "source_receipt_id": "fd990ec1e832c1caba9322b873c791a19b25774d42227a8c52f8ab0c4333a4ae",
+      "source_request_digest_sha256": "b7bf1273ad18d83b2fb7751dc9668836a953fe771a7aef4ca2983f7c939b6fa8"
+    },
+    {
+      "baseline": {
+        "answers": {
+          "ok": {
+            "kind": "binary",
+            "probability_provenance": null,
+            "probability_true": null,
+            "proposition": "ok",
+            "value": true
+          }
+        },
+        "attempts": 0,
+        "cost_nano_usd": 0,
+        "created_at_unix_ms": 1793627193238,
+        "db_claim_ms": 0,
+        "db_commit_ms": null,
+        "disposition": "accept",
+        "evidence_revisions": {},
+        "kernel_compute_ms": 0,
+        "model_id": null,
+        "prediction_cache_hit": false,
+        "provider_id": null,
+        "provider_latency_ms": null,
+        "provider_reported_cost_nano_usd": null,
+        "provider_usage": null,
+        "reason_codes": [
+          "deterministic_resolution"
+        ],
+        "receipt_id": "rec_pure_deferred",
+        "release": "ops.drill@1",
+        "release_digest_sha256": "ffed73b0e7466273be8208a672b1fcb5f9501949feb2c33d16bc2486ad4e66bc",
+        "request_digest_sha256": "fdbc675b1d2fdb259009d5d4df8e601fadac4a4687e58e7cfcc57383da745dd9",
+        "returned_model_id": null,
+        "scope": {
+          "environment": "test",
+          "product_id": "product",
+          "project_id": "project",
+          "tenant_id": "tier5-997b88a685b9"
+        },
+        "total_latency_ms": 0
+      },
+      "candidate": {
+        "answers": {
+          "ok": {
+            "kind": "binary",
+            "probability_provenance": null,
+            "probability_true": null,
+            "proposition": "ok",
+            "value": true
+          }
+        },
+        "attempts": 0,
+        "cost_nano_usd": 0,
+        "created_at_unix_ms": 1793627193238,
+        "db_claim_ms": 0,
+        "db_commit_ms": null,
+        "disposition": "review",
+        "evidence_revisions": {},
+        "kernel_compute_ms": 0,
+        "model_id": null,
+        "prediction_cache_hit": false,
+        "provider_id": null,
+        "provider_latency_ms": null,
+        "provider_reported_cost_nano_usd": null,
+        "provider_usage": null,
+        "reason_codes": [
+          "not_evaluated"
+        ],
+        "receipt_id": "rec_pure_deferred",
+        "release": "ops.drill@2",
+        "release_digest_sha256": "bb5606a62ceddb16c11b7a4a8ed1b6d1402ab137ddec3a0dfb817be27558b056",
+        "request_digest_sha256": "718bf1319b3ef78088afe33ac9e91466d56a672710a39170f76b59d2d4a2ebb1",
+        "returned_model_id": null,
+        "scope": {
+          "environment": "test",
+          "product_id": "product",
+          "project_id": "project",
+          "tenant_id": "tier5-997b88a685b9"
+        },
+        "total_latency_ms": 0
+      },
+      "changed": true,
+      "key": "deferred",
+      "observed_at_unix_ms": 1793627193238,
+      "source_disposition": "accept",
+      "source_receipt_id": "7fd7943d7acd498b4c7b243e362e6499cb7d6ae17cbdc692a9873a64b5942c16",
+      "source_request_digest_sha256": "ed457cedae3c6379bc624f5fc34ea2905f2d46073d5185898a568dff8d7432f5"
+    }
+  ],
+  "schema_version": "kernel-comparison/v1",
+  "semantic_qualification_granted": false
+}

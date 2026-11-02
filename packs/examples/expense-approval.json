@@ -1,0 +1,198 @@
+{
+  "api_version": "kernel/v1",
+  "kind": "DecisionPack",
+  "version": "1.0.0",
+  "required_evidence": [
+    "receipt"
+  ],
+  "limits": {
+    "deadline_ms": 1000,
+    "max_billable_attempts": 1,
+    "max_cost_nano_usd": 1000
+  },
+  "qualification": {
+    "semantic_acceptance_qualified": false,
+    "provider_id": null,
+    "model_id": null
+  },
+  "id": "expense.approval",
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "amount": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1000000
+      },
+      "vendor_allowed": {
+        "type": "boolean"
+      },
+      "country": {
+        "type": "string",
+        "min_length": 2,
+        "max_length": 32
+      },
+      "uncertain": {
+        "type": "boolean"
+      },
+      "priority": {
+        "type": "string",
+        "values": [
+          "low",
+          "normal",
+          "high"
+        ]
+      }
+    },
+    "required": [
+      "amount",
+      "vendor_allowed",
+      "country"
+    ]
+  },
+  "state_preparation": {
+    "version": "kernel/state-v1",
+    "steps": [
+      {
+        "op": "copy",
+        "from": "country",
+        "to": "region"
+      },
+      {
+        "op": "normalize_string",
+        "field": "region",
+        "lowercase": true
+      },
+      {
+        "op": "default",
+        "field": "uncertain",
+        "value": false
+      },
+      {
+        "op": "default",
+        "field": "priority",
+        "value": "normal"
+      },
+      {
+        "op": "default",
+        "field": "route",
+        "value": "reimbursement"
+      }
+    ]
+  },
+  "evidence_requirements": {
+    "receipt": {
+      "value_schema": {
+        "type": "object",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "min_length": 1,
+            "max_length": 64
+          }
+        },
+        "required": [
+          "reference"
+        ]
+      },
+      "max_age_ms": 86400000
+    }
+  },
+  "outputs": [
+    {
+      "kind": "binary",
+      "id": "eligible",
+      "proposition": "vendor_is_allowed"
+    },
+    {
+      "kind": "categorical",
+      "id": "route",
+      "vocabulary": [
+        "reimbursement",
+        "travel"
+      ]
+    },
+    {
+      "kind": "ordinal",
+      "id": "priority",
+      "scale_id": "expense_priority/v1",
+      "anchors": [
+        "low",
+        "normal",
+        "high"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "vendor_allowed",
+      "op": "fact_equals",
+      "field": "vendor_allowed",
+      "value": true
+    },
+    {
+      "id": "vendor_denied",
+      "op": "boolean_not",
+      "depends_on": [
+        "vendor_allowed"
+      ]
+    },
+    {
+      "id": "large_amount",
+      "op": "fact_compare",
+      "field": "amount",
+      "comparison": "greater_or_equal",
+      "value": 1000
+    },
+    {
+      "id": "uncertain",
+      "op": "fact_equals",
+      "field": "uncertain",
+      "value": true
+    },
+    {
+      "id": "supported_region",
+      "op": "fact_equals",
+      "field": "region",
+      "value": "in"
+    },
+    {
+      "id": "eligibility",
+      "op": "state_answer",
+      "field": "vendor_allowed",
+      "output": "eligible"
+    },
+    {
+      "id": "route_answer",
+      "op": "state_answer",
+      "field": "route",
+      "output": "route"
+    },
+    {
+      "id": "priority_answer",
+      "op": "state_answer",
+      "field": "priority",
+      "output": "priority"
+    }
+  ],
+  "policy": {
+    "hard_deny_nodes": [
+      "vendor_denied"
+    ],
+    "review_nodes": [
+      "large_amount"
+    ],
+    "abstain_nodes": [
+      "uncertain"
+    ],
+    "accept_nodes": [
+      "supported_region"
+    ],
+    "accept_deterministic": true,
+    "fallback": {
+      "provider_failure": "abstain",
+      "missing_evidence": "review",
+      "unresolved": "abstain"
+    }
+  }
+}

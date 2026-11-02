@@ -81,6 +81,10 @@ pub enum Disposition {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum ReasonCode {
+    MissingPermission,
+    PolicyReview,
+    PolicyAbstain,
+    CrashRecovery,
     HardPolicyDeny,
     RevokedRelease,
     MissingEvidence,
@@ -319,13 +323,26 @@ pub struct RequestLimits {
     pub max_cost_nano_usd: Option<u64>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Scope {
     pub tenant_id: String,
     pub project_id: String,
     pub environment: String,
     pub product_id: String,
+}
+
+impl Scope {
+    pub fn is_valid(&self) -> bool {
+        [
+            &self.tenant_id,
+            &self.project_id,
+            &self.environment,
+            &self.product_id,
+        ]
+        .iter()
+        .all(|s| !s.is_empty() && s.len() <= 128)
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -348,6 +365,8 @@ pub struct DecisionReceipt {
     pub prediction_cache_hit: bool,
     pub cost_nano_usd: Option<u64>,
     pub provider_reported_cost_nano_usd: Option<u64>,
+    #[serde(default)]
+    pub provider_usage: Option<serde_json::Value>,
     pub created_at_unix_ms: u64,
     pub kernel_compute_ms: u64,
     pub db_claim_ms: u64,

@@ -176,6 +176,8 @@ pub fn evaluate(
         let expected =
             label(&case.expected).ok_or_else(|| EvaluationError::Case(case.id.clone()))?;
         let Some(predicted) = label(&case.predicted) else {
+            // An unresolved positive is a missed class, not a disappearing row.
+            acc.classes.entry(expected.clone()).or_default().2 += 1;
             continue;
         };
         acc.evaluated += 1;
@@ -355,6 +357,8 @@ mod tests {
         assert_eq!(slice.evaluated, 2);
         assert_eq!(slice.accuracy, Some(0.5));
         assert!(slice.brier_score.is_none());
+        assert_eq!(slice.classes["true"].false_negatives, 2);
+        assert_eq!(slice.classes["true"].recall, Some(1.0 / 3.0));
         let mut leaked = dataset;
         leaked.cases[2].group_id = leaked.cases[0].group_id.clone();
         leaked.cases[2].partition = Partition::Development;

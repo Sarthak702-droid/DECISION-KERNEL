@@ -1,0 +1,83 @@
+{
+  "api_version": "kernel/v1",
+  "kind": "DecisionPack",
+  "id": "support.triage",
+  "version": "1.2.0",
+  "required_evidence": [
+    "latest_message"
+  ],
+  "permitted_provider_sensitivities": [
+    "internal"
+  ],
+  "outputs": [
+    {
+      "kind": "categorical",
+      "id": "queue",
+      "vocabulary": [
+        "billing",
+        "technical",
+        "account",
+        "general"
+      ]
+    },
+    {
+      "kind": "binary",
+      "id": "urgent",
+      "proposition": "needs_urgent_review"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "egress_denied",
+      "op": "fact_equals",
+      "field": "egress_denied",
+      "value": true
+    },
+    {
+      "id": "classify_queue",
+      "op": "semantic_question",
+      "output": "queue",
+      "prompt": "Classify the support topic using the declared queue vocabulary."
+    },
+    {
+      "id": "detect_urgency",
+      "op": "semantic_question",
+      "output": "urgent",
+      "prompt": "Does the verified message warrant urgent review?"
+    }
+  ],
+  "policy": {
+    "hard_deny_nodes": [
+      "egress_denied"
+    ],
+    "accept_deterministic": false,
+    "accept_qualified_semantic": false
+  },
+  "limits": {
+    "deadline_ms": 1000,
+    "max_billable_attempts": 1,
+    "max_cost_nano_usd": 1000000
+  },
+  "qualification": {
+    "semantic_acceptance_qualified": false,
+    "provider_id": "support-byok",
+    "model_id": "your-model"
+  },
+  "evidence_requirements": {
+    "latest_message": {
+      "value_schema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "string",
+            "min_length": 1,
+            "max_length": 8000
+          }
+        },
+        "required": [
+          "body"
+        ]
+      }
+    }
+  }
+}

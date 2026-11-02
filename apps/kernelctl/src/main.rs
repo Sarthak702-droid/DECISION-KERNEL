@@ -1,3 +1,4 @@
+mod comparison;
 use kernel_compiler::{DecisionPack, compile};
 use kernel_evaluation::{EvaluationDataset, evaluate, meets_criteria};
 use sha2::{Digest, Sha256};
@@ -18,6 +19,9 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
             "usage: kernelctl <migrate|validate|compile|publish|inspect|inspect-active|promote|rollback|revoke-release|reconcile-attempt> ..."
                 .into(),
         );
+    }
+    if args[1] == "compare-stored" {
+        return comparison::run(&args);
     }
     if args[1] == "migrate" {
         let pool = sqlx::PgPool::connect(&env::var("DATABASE_URL")?).await?;
@@ -162,8 +166,9 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         if changed != 1 {
             return Err("release pointer revision conflict".into());
         }
-        sqlx::query("INSERT INTO outbox_events (event_id,tenant_id,project_id,environment,event_type,payload) VALUES (gen_random_uuid()::text,$1,$2,$3,'release.promoted',$4)")
+        sqlx::query("INSERT INTO outbox_events (event_id,tenant_id,project_id,environment,product_id,event_type,payload) VALUES (gen_random_uuid()::text,$1,$2,$3,'',$4,$5)")
             .bind(&tenant).bind(&project).bind(&environment)
+            .bind(if args[1] == "rollback" { "release.rolled_back" } else { "release.promoted" })
             .bind(serde_json::json!({"decision_type":args[2],"version":args[3],"revision":expected+1,"content_hash_sha256":hash}))
             .execute(&mut *tx).await?;
         tx.commit().await?;
@@ -188,12 +193,40 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
         if changed != 1 {
             return Err("active release not found".into());
         }
-        sqlx::query("INSERT INTO outbox_events (event_id,tenant_id,project_id,environment,event_type,payload) VALUES (gen_random_uuid()::text,$1,$2,$3,'release.revoked',$4)")
+        sqlx::query("INSERT INTO outbox_events (event_id,tenant_id,project_id,environment,product_id,event_type,payload) VALUES (gen_random_uuid()::text,$1,$2,$3,'','release.revoked',$4)")
             .bind(env::var("KERNEL_TENANT_ID")?).bind(env::var("KERNEL_PROJECT_ID")?).bind(env::var("KERNEL_ENVIRONMENT")?)
             .bind(serde_json::json!({"decision_type":args[2],"version":args[3]}))
             .execute(&mut *tx).await?;
         tx.commit().await?;
         println!("revoked {}@{}", args[2], args[3]);
+        return Ok(());
+    }
+    if args[1] == "register-reviewer" {
+        let token = env::var("KERNEL_NEW_REVIEWER_TOKEN")?;
+        let reviewer = env::var("KERNEL_REVIEWER_ID")?;
+        if token.len() < 32 || reviewer.is_empty() || reviewer.len() > 128 {
+            return Err("reviewer ID must be 1..128 bytes and token at least 32 bytes".into());
+        }
+        let pool = sqlx::PgPool::connect(&env::var("DATABASE_URL")?).await?;
+        sqlx::query("INSERT INTO reviewer_tokens (token_hash_sha256,tenant_id,project_id,environment,product_id,reviewer_id) VALUES ($1,$2,$3,$4,$5,$6)")
+            .bind(format!("{:x}", Sha256::digest(token.as_bytes())))
+            .bind(env::var("KERNEL_TENANT_ID")?).bind(env::var("KERNEL_PROJECT_ID")?)
+            .bind(env::var("KERNEL_ENVIRONMENT")?).bind(env::var("KERNEL_PRODUCT_ID")?).bind(reviewer)
+            .execute(&pool).await?;
+        println!("reviewer registered");
+        return Ok(());
+    }
+    if args[1] == "revoke-reviewer" {
+        if args.len() != 3 || args[2].len() != 64 || !args[2].bytes().all(|b| b.is_ascii_hexdigit())
+        {
+            return Err("usage: kernelctl revoke-reviewer <token-sha256>".into());
+        }
+        let pool = sqlx::PgPool::connect(&env::var("DATABASE_URL")?).await?;
+        sqlx::query("UPDATE reviewer_tokens SET active=false WHERE token_hash_sha256=$1")
+            .bind(&args[2])
+            .execute(&pool)
+            .await?;
+        println!("reviewer revoked");
         return Ok(());
     }
     if args[1] == "register-token" {
@@ -238,25 +271,18 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
             return Err("invalid reconciliation charge or proof reference".into());
         }
         let pool = sqlx::PgPool::connect(&env::var("DATABASE_URL")?).await?;
-        let tenant = env::var("KERNEL_TENANT_ID")?;
-        let project = env::var("KERNEL_PROJECT_ID")?;
-        let environment = env::var("KERNEL_ENVIRONMENT")?;
-        let mut tx = pool.begin().await?;
-        let row = sqlx::query("SELECT purpose,reserved_nano_usd,status FROM provider_attempts WHERE tenant_id=$1 AND project_id=$2 AND environment=$3 AND idempotency_key=$4 AND attempt_no=1 FOR UPDATE")
-            .bind(&tenant).bind(&project).bind(&environment).bind(&args[2]).fetch_one(&mut *tx).await?;
-        let reserved: i64 = row.get("reserved_nano_usd");
-        let purpose: String = row.get("purpose");
-        if row.get::<String, _>("status") == "reconciled" || charged > reserved {
-            return Err("attempt already reconciled or verified charge exceeds hold".into());
+        let scope = kernel_core::Scope {
+            tenant_id: env::var("KERNEL_TENANT_ID")?,
+            project_id: env::var("KERNEL_PROJECT_ID")?,
+            environment: env::var("KERNEL_ENVIRONMENT")?,
+            product_id: env::var("KERNEL_PRODUCT_ID")?,
+        };
+        kernel_runtime::postgres::PostgresStore {
+            pool,
+            purpose: String::new(),
         }
-        let updated = sqlx::query("UPDATE budget_buckets SET held_nano_usd=held_nano_usd-$4,spent_nano_usd=spent_nano_usd+$5 WHERE tenant_id=$1 AND project_id=$2 AND purpose=$3 AND held_nano_usd >= $4")
-            .bind(&tenant).bind(&project).bind(&purpose).bind(reserved).bind(charged).execute(&mut *tx).await?;
-        if updated.rows_affected() != 1 {
-            return Err("budget hold missing".into());
-        }
-        sqlx::query("UPDATE provider_attempts SET status='reconciled',actual_charge_nano_usd=$5,reconciliation_ref=$6 WHERE tenant_id=$1 AND project_id=$2 AND environment=$3 AND idempotency_key=$4 AND attempt_no=1")
-            .bind(&tenant).bind(&project).bind(&environment).bind(&args[2]).bind(charged).bind(&args[4]).execute(&mut *tx).await?;
-        tx.commit().await?;
+        .reconcile(&scope, &args[2], charged as u64, &args[4])
+        .await?;
         println!(
             "reconciled attempt {} with verified charge {} nano-USD",
             args[2], charged
@@ -453,7 +479,8 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
     if args.len() != 3 || !matches!(args[1].as_str(), "validate" | "compile" | "publish") {
         return Err("usage: kernelctl <validate|compile|publish|replay|bench> <pack.json>".into());
     }
-    let pack: DecisionPack = serde_json::from_slice(&fs::read(&args[2])?)?;
+    let pack: DecisionPack =
+        serde_json::from_value(kernel_core::strict_json(&fs::read(&args[2])?)?)?;
     let graph = compile(pack)?;
     match args[1].as_str() {
         "validate" => println!("valid {}", graph.content_hash_sha256),
@@ -483,7 +510,7 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 async fn migrate(pool: &sqlx::PgPool) -> Result<(), Box<dyn std::error::Error>> {
-    let migrations: [(i64, &str); 13] = [
+    let migrations: [(i64, &str); 17] = [
         (1, include_str!("../../../migrations/0001_init.sql")),
         (
             2,
@@ -527,6 +554,22 @@ async fn migrate(pool: &sqlx::PgPool) -> Result<(), Box<dyn std::error::Error>> 
             13,
             include_str!("../../../migrations/0013_decision_jobs.sql"),
         ),
+        (
+            14,
+            include_str!("../../../migrations/0014_tier0_boundaries.sql"),
+        ),
+        (
+            15,
+            include_str!("../../../migrations/0015_provider_connections.sql"),
+        ),
+        (
+            16,
+            include_str!("../../../migrations/0016_developer_product.sql"),
+        ),
+        (
+            17,
+            include_str!("../../../migrations/0017_production_operations.sql"),
+        ),
     ];
     let mut tx = pool.begin().await?;
     sqlx::query("SELECT pg_advisory_xact_lock(61273751)")
@@ -560,4 +603,90 @@ async fn migrate(pool: &sqlx::PgPool) -> Result<(), Box<dyn std::error::Error>> 
     }
     tx.commit().await?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tier0_tests {
+    use super::*;
+    use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
+    use std::str::FromStr;
+
+    #[tokio::test]
+    async fn legacy_migration_quarantines_unattributed_data_and_preserves_holds() {
+        let Ok(url) = env::var("KERNEL_TEST_DATABASE_URL") else {
+            assert!(env::var_os("CI").is_none(), "test database required in CI");
+            return;
+        };
+        let owner = sqlx::PgPool::connect(&url).await.unwrap();
+        let suffix = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let database = format!("tier0_upgrade_{suffix}");
+        sqlx::query(&format!("CREATE DATABASE {database}"))
+            .execute(&owner)
+            .await
+            .unwrap();
+        let pool = PgPoolOptions::new()
+            .connect_with(
+                PgConnectOptions::from_str(&url)
+                    .unwrap()
+                    .database(&database),
+            )
+            .await
+            .unwrap();
+        let directory = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../migrations");
+        let mut files: Vec<_> = fs::read_dir(directory)
+            .unwrap()
+            .map(|e| e.unwrap().path())
+            .filter(|p| p.extension().is_some_and(|ext| ext == "sql"))
+            .collect();
+        files.sort();
+        assert_eq!(files.len(), 17);
+        for path in &files[..13] {
+            sqlx::raw_sql(&fs::read_to_string(path).unwrap())
+                .execute(&pool)
+                .await
+                .unwrap();
+        }
+        sqlx::raw_sql("INSERT INTO decision_receipts (tenant_id,project_id,environment,idempotency_key,request_digest,status,receipt) VALUES
+            ('t','p','test','held','d1','committed','{\"scope\":{\"product_id\":\"a\"}}'),
+            ('t','p','test','spent','d2','committed','{\"scope\":{\"product_id\":\"b\"}}');
+            INSERT INTO budget_buckets (tenant_id,project_id,purpose,cap_nano_usd,spent_nano_usd,held_nano_usd) VALUES ('t','p','test',1000,20,80);
+            INSERT INTO provider_attempts (tenant_id,project_id,environment,idempotency_key,attempt_no,purpose,reserved_nano_usd,actual_charge_nano_usd,status,provider_id,model_id) VALUES
+            ('t','p','test','held',1,'test',80,NULL,'uncertain','fixture','fixture'),
+            ('t','p','test','spent',1,'test',20,20,'reconciled','fixture','fixture');
+            INSERT INTO evidence (tenant_id,project_id,environment,evidence_id,revision,observed_at_unix_ms,digest_sha256,sensitivity,value) VALUES ('t','p','test','ev',1,1,'legacy','internal','{}');")
+            .execute(&pool).await.unwrap();
+        sqlx::raw_sql(&fs::read_to_string(&files[13]).unwrap())
+            .execute(&pool)
+            .await
+            .unwrap();
+        let budgets: Vec<(String,i64,i64,i64)> = sqlx::query_as("SELECT product_id,cap_nano_usd,spent_nano_usd,held_nano_usd FROM budget_buckets WHERE product_id<>'' ORDER BY product_id")
+            .fetch_all(&pool).await.unwrap();
+        assert_eq!(
+            budgets,
+            vec![("a".into(), 0, 0, 80), ("b".into(), 0, 20, 0)]
+        );
+        let quarantined: i64 =
+            sqlx::query_scalar("SELECT count(*) FROM evidence WHERE product_id=''")
+                .fetch_one(&pool)
+                .await
+                .unwrap();
+        assert_eq!(quarantined, 1);
+        // The new product can safely use the same evidence identity.
+        sqlx::query("INSERT INTO evidence (tenant_id,project_id,environment,product_id,evidence_id,revision,observed_at_unix_ms,digest_sha256,sensitivity,value) VALUES ('t','p','test','a','ev',1,1,'new','internal','{}')")
+            .execute(&pool).await.unwrap();
+        let keys: Vec<String> =
+            sqlx::query_scalar("SELECT product_id FROM provider_attempts ORDER BY idempotency_key")
+                .fetch_all(&pool)
+                .await
+                .unwrap();
+        assert_eq!(keys, vec!["a", "b"]);
+        pool.close().await;
+        sqlx::query(&format!("DROP DATABASE {database}"))
+            .execute(&owner)
+            .await
+            .unwrap();
+    }
 }

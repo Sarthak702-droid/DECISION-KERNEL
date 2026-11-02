@@ -1,0 +1,19 @@
+PASS docs onboarding: publish/promote, TypeScript BYOK create/probe/bind, packs and console
+PASS real HTTP application consumes typed receipt, replays idempotently and respects product isolation
+PASS authenticated/revoked reviewer, typed corrections, proof-backed outcome states and immutable receipt
+PASS held-out runner reports quality, review workload and ledger cost; rejects cross-partition group leakage
+433, provider;dur=2.658, queue;dur=0.025, runtime;dur=17.608, prelude;dur=7.194","http;dur=25.155"],"status":200}
+{"correlation_id":"dk-18e43e6fc01bfd95-76","duration_us":6635,"event":"http.completed","request_id":"dk-18e43e6fc01bfd95-76","spans":["http;dur=6.629"],"status":201}
+{"correlation_id":"dk-18e43e6fc0a5e396-77","duration_us":24997,"event":"http.completed","request_id":"dk-18e43e6fc0a5e396-77","spans":["engine;dur=0.705, db;dur=20.523, provider;dur=3.320, queue;dur=0.034, runtime;dur=18.452, prelude;dur=6.131","http;dur=24.989"],"status":200}
+{"correlation_id":"dk-18e43e6fc24e9fd1-78","duration_us":4828,"event":"http.completed","request_id":"dk-18e43e6fc24e9fd1-78","spans":["http;dur=4.821"],"status":201}
+{"correlation_id":"dk-18e43e6fc2bd9f64-79","duration_us":24379,"event":"http.completed","request_id":"dk-18e43e6fc2bd9f64-79","spans":["engine;dur=0.650, db;dur=19.766, provider;dur=3.613, queue;dur=0.024, runtime;dur=17.547, prelude;dur=6.507","http;dur=24.376"],"status":200}
+{"correlation_id":"dk-18e43e6fc45c2fde-7a","duration_us":5142,"event":"http.completed","request_id":"dk-18e43e6fc45c2fde-7a","spans":["http;dur=5.139"],"status":201}
+{"correlation_id":"dk-18e43e6fc4b8c9ef-7b","duration_us":25265,"event":"http.completed","request_id":"dk-18e43e6fc4b8c9ef-7b","spans":["engine;dur=0.553, db;dur=21.303, provider;dur=3.057, queue;dur=0.021, runtime;dur=17.988, prelude;dur=6.948","http;dur=25.261"],"status":200}
+{"correlation_id":"dk-18e43e6fc666f7c6-7c","duration_us":5177,"event":"http.completed","request_id":"dk-18e43e6fc666f7c6-7c","spans":["http;dur=5.173"],"status":201}
+{"correlation_id":"dk-18e43e6fc6d8c4a4-7d","duration_us":29376,"event":"http.completed","request_id":"dk-18e43e6fc6d8c4a4-7d","spans":["engine;dur=0.806, db;dur=24.543, provider;dur=3.547, queue;dur=0.036, runtime;dur=21.983, prelude;dur=6.950","http;dur=29.371"],"status":200}
+{"correlation_id":"dk-18e43e6fc8bf754c-7e","duration_us":6902,"event":"http.completed","request_id":"dk-18e43e6fc8bf754c-7e","spans":["http;dur=6.896"],"status":201}
+{"correlation_id":"dk-18e43e6fc972979b-7f","duration_us":24817,"event":"http.completed","request_id":"dk-18e43e6fc972979b-7f","spans":["engine;dur=0.571, db;dur=21.110, provider;dur=2.770, queue;dur=0.024, runtime;dur=16.744, prelude;dur=7.733","http;dur=24.812"],"status":200}
+{"correlation_id":"dk-18e43e6fcb0bd9f9-80","duration_us":6416,"event":"http.completed","request_id":"dk-18e43e6fcb0bd9f9-80","spans":["http;dur=6.412"],"status":200}
+
+Support integration listening on localhost
+

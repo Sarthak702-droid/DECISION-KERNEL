@@ -1,0 +1,10 @@
+PASS separate non-owner API logins, readiness, protected metrics and exact request capture
+PASS atomic rate limit shared across two API replicas: exactly 3 admitted, 5 rejected
+PASS candidate promotion, stale revision rejection, pack rollback and pinned receipt replay
+PASS worker readiness and deferred execution with distinct worker database credential
+PASS stored-request digest validation, frozen-time candidate comparison and semantic contract change rejection
+PASS owner-only lifecycle access, expired cache retention and cross-product isolation
+PASS pg_dump/pg_restore drill: receipts, inputs, release pointers, outbox and uncertain financial holds preserved
+PASS durable lifecycle block and deletion refusal while financial holds remain
+PASS stale export rejection; reconciled scope deletion removes inputs/receipts while durable block survives
+PASS deployment validation binds immutable registry images, exact commit and actual evidence bytes

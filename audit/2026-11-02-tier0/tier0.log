@@ -1,0 +1,182 @@
+cargo fmt --all --check
+cargo clippy --workspace --all-targets --locked -- -D warnings
+    Checking kernel-provider v0.1.0 (/home/sarthaktripathy/Documents/DECISION KERNEL/crates/kernel-provider)
+    Checking kernel-runtime v0.1.0 (/home/sarthaktripathy/Documents/DECISION KERNEL/crates/kernel-runtime)
+    Checking kerneld v0.1.0 (/home/sarthaktripathy/Documents/DECISION KERNEL/apps/kerneld)
+    Checking kernelctl v0.1.0 (/home/sarthaktripathy/Documents/DECISION KERNEL/apps/kernelctl)
+    Checking kernel-worker v0.1.0 (/home/sarthaktripathy/Documents/DECISION KERNEL/apps/kernel-worker)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.96s
+cargo build --workspace --locked
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.15s
+DATABASE_URL="$KERNEL_TEST_DATABASE_URL" cargo run --locked -p kernelctl -- migrate
+   Compiling kernel-provider v0.1.0 (/home/sarthaktripathy/Documents/DECISION KERNEL/crates/kernel-provider)
+   Compiling kernel-runtime v0.1.0 (/home/sarthaktripathy/Documents/DECISION KERNEL/crates/kernel-runtime)
+   Compiling kernelctl v0.1.0 (/home/sarthaktripathy/Documents/DECISION KERNEL/apps/kernelctl)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.08s
+     Running `target/debug/kernelctl migrate`
+DATABASE_URL="$KERNEL_TEST_DATABASE_URL" cargo run --locked -p kernelctl -- migrate
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.10s
+     Running `target/debug/kernelctl migrate`
+cargo test --workspace --locked
+   Compiling kernel-provider v0.1.0 (/home/sarthaktripathy/Documents/DECISION KERNEL/crates/kernel-provider)
+   Compiling kernel-runtime v0.1.0 (/home/sarthaktripathy/Documents/DECISION KERNEL/crates/kernel-runtime)
+   Compiling kernel-worker v0.1.0 (/home/sarthaktripathy/Documents/DECISION KERNEL/apps/kernel-worker)
+   Compiling kerneld v0.1.0 (/home/sarthaktripathy/Documents/DECISION KERNEL/apps/kerneld)
+   Compiling kernelctl v0.1.0 (/home/sarthaktripathy/Documents/DECISION KERNEL/apps/kernelctl)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.19s
+     Running unittests src/lib.rs (target/debug/deps/kernel_compiler-4662f06fc62b6e12)
+
+running 5 tests
+test tests::cycle_fails ... ok
+test tests::missing_producer_fails ... ok
+test tests::unknown_node_field_is_rejected ... ok
+test tests::unreachable_node_is_rejected ... ok
+test tests::compiles_and_orders ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/kernel_core-9c87806c18af8998)
+
+running 3 tests
+test tests::discrete_true_has_no_fabricated_probability ... ok
+test tests::duplicate_nested_json_is_rejected ... ok
+test tests::invalid_distribution_is_rejected ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/kernel_evaluation-0a572c9fcdd5e601)
+
+running 2 tests
+test tests::labels_are_not_probabilities ... ok
+test tests::reports_coverage_and_rejects_group_leakage ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/kernel_provider-c00d7be3758de856)
+
+running 6 tests
+test tests::invalid_normalization_preserves_billing_evidence ... ok
+test tests::label_only_response_preserves_null_probability ... ok
+test tests::generated_probability_and_truncation_fail_closed ... ok
+test tests::router_model_requires_explicit_allowlist ... ok
+test tests::system_one_fabricated_probability_fails_closed ... ok
+test tests::system_one_normalizes_choice_and_noul_without_probability ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/kernel_runtime-ca7d9a23217810f8)
+
+running 4 tests
+test tests::deterministic_answer_uses_zero_provider_calls ... ok
+test tests::hard_deny_dominates_and_is_idempotent ... ok
+test tests::routed_semantic_model_records_requested_and_served_ids ... ok
+test tests::label_only_semantic_result_stays_review_only_and_uncalibrated ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/postgres_flow.rs (target/debug/deps/postgres_flow-46f4ff9f90e16bfc)
+
+running 1 test
+test postgres_receipts_cache_and_budget_are_scoped ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+
+     Running tests/tier0.rs (target/debug/deps/tier0-d1083cfa543b9771)
+
+running 1 test
+test isolated_credentials_cover_scope_deadlines_billing_and_recovery ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.59s
+
+     Running unittests src/main.rs (target/debug/deps/kernel_worker-7a2f6248ab46aede)
+
+running 2 tests
+test jobs::tests::queued_decision_pins_release_and_commits_receipt ... ok
+test outbox::tests::leased_events_retry_and_fence_stale_workers ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running unittests src/main.rs (target/debug/deps/kernelctl-59bfe4345def0e25)
+
+running 1 test
+test tier0_tests::legacy_migration_quarantines_unattributed_data_and_preserves_holds ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.31s
+
+     Running unittests src/main.rs (target/debug/deps/kerneld-7a2d79cf224ba1cc)
+
+running 1 test
+test tests::active_release_is_pinned_and_promotion_uses_revision ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+   Doc-tests kernel_compiler
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests kernel_core
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests kernel_evaluation
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests kernel_provider
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests kernel_runtime
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+python3 scripts/verify-tier0.py
+PASS daemon starts with runtime login and readiness succeeds
+PASS eight concurrent duplicates produce one receipt and one completed event
+PASS authenticated duplicate POST, GET and conflicts isolate products and tenants
+PASS missing permission and unresolved evidence fail closed with input identity preserved
+PASS evidence ingestion and reads are product scoped
+PASS worker login completes API jobs and reclaims crashed leases without duplicate receipts
+PASS 50 ms deadline includes authentication DB lock wait
+PASS deadline includes release and evidence DB waits
+PASS readiness detects lost write privileges and recovers
+PASS startup rejects owner API credentials and runtime-only worker credentials
+PASS invalid provider configuration and unavailable database fail startup explicitly
+PASS HTTPS paid duplicates dispatch once; exact cache and billing isolate products
+PASS pre-dispatch price bound, invalid-output billing and overspend reconciliation pass
+PASS API queued semantic job executes through HTTPS with the worker login
+PASS actual API process death recovers one terminal receipt with no paid redispatch
+{
+  "result": "PASS",
+  "checks": [
+    "daemon starts with runtime login and readiness succeeds",
+    "eight concurrent duplicates produce one receipt and one completed event",
+    "authenticated duplicate POST, GET and conflicts isolate products and tenants",
+    "missing permission and unresolved evidence fail closed with input identity preserved",
+    "evidence ingestion and reads are product scoped",
+    "worker login completes API jobs and reclaims crashed leases without duplicate receipts",
+    "50 ms deadline includes authentication DB lock wait",
+    "deadline includes release and evidence DB waits",
+    "readiness detects lost write privileges and recovers",
+    "startup rejects owner API credentials and runtime-only worker credentials",
+    "invalid provider configuration and unavailable database fail startup explicitly",
+    "HTTPS paid duplicates dispatch once; exact cache and billing isolate products",
+    "pre-dispatch price bound, invalid-output billing and overspend reconciliation pass",
+    "API queued semantic job executes through HTTPS with the worker login",
+    "actual API process death recovers one terminal receipt with no paid redispatch"
+  ]
+}
+cargo run --locked -p kernelctl -- replay packs/examples/support-triage.json tests/support-triage-replay.json
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.11s
+     Running `target/debug/kernelctl replay packs/examples/support-triage.json tests/support-triage-replay.json`
+Replayed 2 decisions: 2 matched, 0 mismatched

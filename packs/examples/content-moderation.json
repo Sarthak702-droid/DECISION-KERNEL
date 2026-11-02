@@ -1,0 +1,112 @@
+{
+  "api_version": "kernel/v1",
+  "kind": "DecisionPack",
+  "version": "1.0.0",
+  "required_evidence": [],
+  "limits": {
+    "deadline_ms": 1000,
+    "max_billable_attempts": 1,
+    "max_cost_nano_usd": 1000
+  },
+  "qualification": {
+    "semantic_acceptance_qualified": false,
+    "provider_id": "fixture",
+    "model_id": "fixture",
+    "adapter_version": "fixture-v1"
+  },
+  "id": "content.moderation",
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string",
+        "min_length": 1,
+        "max_length": 4096
+      },
+      "blocked": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "text",
+      "blocked"
+    ]
+  },
+  "state_preparation": {
+    "version": "kernel/state-v1",
+    "steps": [
+      {
+        "op": "normalize_string",
+        "field": "text",
+        "lowercase": false
+      }
+    ]
+  },
+  "semantic_state_fields": [
+    "text"
+  ],
+  "outputs": [
+    {
+      "kind": "binary",
+      "id": "safe",
+      "proposition": "content_is_safe"
+    },
+    {
+      "kind": "categorical",
+      "id": "category",
+      "vocabulary": [
+        "ordinary",
+        "abuse",
+        "spam"
+      ]
+    },
+    {
+      "kind": "ordinal",
+      "id": "severity",
+      "scale_id": "moderation_severity/v1",
+      "anchors": [
+        "low",
+        "medium",
+        "high"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "blocked",
+      "op": "fact_equals",
+      "field": "blocked",
+      "value": true
+    },
+    {
+      "id": "safety",
+      "op": "semantic_question",
+      "output": "safe",
+      "prompt": "Is the provided text safe for publication?"
+    },
+    {
+      "id": "category",
+      "op": "semantic_question",
+      "output": "category",
+      "prompt": "Classify the text using the declared category vocabulary."
+    },
+    {
+      "id": "severity",
+      "op": "semantic_question",
+      "output": "severity",
+      "prompt": "Rate the text using the declared severity anchors."
+    }
+  ],
+  "policy": {
+    "hard_deny_nodes": [
+      "blocked"
+    ],
+    "accept_deterministic": false,
+    "accept_qualified_semantic": false,
+    "fallback": {
+      "provider_failure": "abstain",
+      "missing_evidence": "review",
+      "unresolved": "review"
+    }
+  }
+}

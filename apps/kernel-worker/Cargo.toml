@@ -14,3 +14,4 @@ kernel-compiler = { version = "0.1.0", path = "../../crates/kernel-compiler" }
 kernel-provider = { version = "0.1.0", path = "../../crates/kernel-provider" }
 kernel-runtime = { version = "0.1.0", path = "../../crates/kernel-runtime" }
 sha2.workspace = true
+axum.workspace = true

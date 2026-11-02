@@ -1,0 +1,6 @@
+[advisories]
+# SQLx locks its optional MySQL driver and rsa even though this workspace enables
+# only PostgreSQL. RSA is absent from every active target/feature graph. CI must
+# run scripts/check-dependencies.py before audit; that guard fails if it becomes
+# reachable. No deployed RSA code is accepted under this exception.
+ignore = ["RUSTSEC-2023-0071"]

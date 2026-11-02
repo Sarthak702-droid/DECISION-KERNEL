@@ -1,0 +1,39 @@
+# Supply registry repository@sha256:digest values from a validated release manifest.
+# DATABASE URLs and provider master key belong in access-controlled host env files.
+services:
+  api:
+    image: ${KERNEL_API_IMAGE:?immutable API digest required}
+    env_file: ${KERNEL_API_ENV_FILE:?API runtime credential env file required}
+    environment:
+      KERNEL_LISTEN_ADDR: 0.0.0.0:8080
+    ports: ['127.0.0.1:8080:8080']
+    user: '65532:65532'
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: '3'}
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    init: false
+    stop_grace_period: 15s
+    restart: unless-stopped
+    mem_limit: 512m
+    cpus: 2
+    pids_limit: 128
+  worker:
+    image: ${KERNEL_WORKER_IMAGE:?immutable worker digest required}
+    env_file: ${KERNEL_WORKER_ENV_FILE:?separate worker credential env file required}
+    environment:
+      KERNEL_WORKER_HEALTH_ADDR: 0.0.0.0:8081
+    user: '65532:65532'
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: '3'}
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    stop_grace_period: 15s
+    restart: unless-stopped
+    mem_limit: 512m
+    cpus: 2
+    pids_limit: 128

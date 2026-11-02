@@ -1,0 +1,9 @@
+{
+  "schema_version": "kernel-images/v1",
+  "images": {
+    "kerneld": "sha256:2f3963edfe825fd3de6935743bb1d61bbb8d63fb9c9e7d156253303911618aa2",
+    "kernel-worker": "sha256:13550dbb4e79033d98b15086b2cb59faa19cf2ee2d8d9947ad9276d1f0221b3a",
+    "kernelctl": "sha256:bfdfa6808391cef9c9a915304ccdcd686f7f803a3034f17e296c42e686ef44f5"
+  },
+  "commit": null
+}

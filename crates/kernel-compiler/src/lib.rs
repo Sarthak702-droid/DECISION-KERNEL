@@ -1,5 +1,7 @@
 //! Publication-time validation and bounded DAG compilation.
-use kernel_core::{Answer, OutputDefinition, validate_answer};
+use kernel_core::{Answer, Disposition, OutputDefinition, validate_answer};
+mod input;
+pub use input::{InputSchema, PreparationStep, StatePreparation};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sha2::{Digest, Sha256};
@@ -13,7 +15,13 @@ pub struct DecisionPack {
     pub kind: String,
     pub id: String,
     pub version: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub input_schema: Option<InputSchema>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub state_preparation: Option<StatePreparation>,
     pub required_evidence: Vec<String>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub evidence_requirements: BTreeMap<String, EvidenceRequirement>,
     #[serde(default)]
     pub permitted_provider_sensitivities: Vec<String>,
     #[serde(default)]
@@ -25,6 +33,13 @@ pub struct DecisionPack {
     pub qualification: Qualification,
     #[serde(default)]
     pub qualification_criteria: Option<QualificationCriteria>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EvidenceRequirement {
+    pub value_schema: InputSchema,
+    pub max_age_ms: Option<u64>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -56,10 +71,13 @@ impl<'de> Deserialize<'de> for Node {
             .ok_or_else(|| D::Error::custom("missing node op"))?;
         let extra: &[&str] = match op {
             "fact_equals" => &["field", "value"],
+            "fact_compare" => &["field", "comparison", "value"],
+            "boolean_not" => &[],
             "evidence_present" => &["evidence_id"],
             "boolean_and" | "boolean_or" => &[],
             "semantic_question" => &["output", "prompt"],
             "literal_answer" => &["output", "answer"],
+            "state_answer" => &["output", "field"],
             _ => return Err(D::Error::custom("unknown node operator")),
         };
         for key in object.keys() {
@@ -79,17 +97,86 @@ impl<'de> Deserialize<'de> for Node {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "op", rename_all = "snake_case", deny_unknown_fields)]
 pub enum Operation {
-    FactEquals { field: String, value: Value },
-    EvidencePresent { evidence_id: String },
+    FactEquals {
+        field: String,
+        value: Value,
+    },
+    FactCompare {
+        field: String,
+        comparison: Comparison,
+        value: f64,
+    },
+    BooleanNot,
+    EvidencePresent {
+        evidence_id: String,
+    },
     BooleanAnd,
     BooleanOr,
-    SemanticQuestion { output: String, prompt: String },
-    LiteralAnswer { output: String, answer: Answer },
+    SemanticQuestion {
+        output: String,
+        prompt: String,
+    },
+    StateAnswer {
+        output: String,
+        field: String,
+    },
+    LiteralAnswer {
+        output: String,
+        answer: Answer,
+    },
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Comparison {
+    Less,
+    LessOrEqual,
+    Greater,
+    GreaterOrEqual,
+}
+impl Comparison {
+    pub fn evaluate(&self, a: f64, b: f64) -> bool {
+        match self {
+            Self::Less => a < b,
+            Self::LessOrEqual => a <= b,
+            Self::Greater => a > b,
+            Self::GreaterOrEqual => a >= b,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum FallbackDisposition {
+    #[default]
+    Review,
+    Abstain,
+}
+impl FallbackDisposition {
+    pub fn disposition(&self) -> Disposition {
+        match self {
+            Self::Review => Disposition::Review,
+            Self::Abstain => Disposition::Abstain,
+        }
+    }
+}
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct FallbackPolicy {
+    pub provider_failure: FallbackDisposition,
+    pub missing_evidence: FallbackDisposition,
+    pub unresolved: FallbackDisposition,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Policy {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub review_nodes: Vec<String>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub abstain_nodes: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fallback: Option<FallbackPolicy>,
     #[serde(default)]
     pub hard_deny_nodes: Vec<String>,
     #[serde(default)]
@@ -166,6 +253,33 @@ pub fn compile(pack: DecisionPack) -> Result<CompiledDecisionGraph, CompileError
     {
         return Err(CompileError::Schema);
     }
+    if let Some(schema) = &pack.input_schema {
+        if !matches!(schema, InputSchema::Object { .. }) {
+            return Err(CompileError::Type("input schema must be an object".into()));
+        }
+        schema.check(0, &mut 0)?;
+    }
+    if let Some(preparation) = &pack.state_preparation {
+        preparation.check()?;
+    }
+    if pack.required_evidence.len() > 32
+        || pack.required_evidence.iter().any(|id| id.is_empty())
+        || pack.required_evidence.iter().collect::<BTreeSet<_>>().len()
+            != pack.required_evidence.len()
+    {
+        return Err(CompileError::Type("invalid evidence requirements".into()));
+    }
+    for (id, requirement) in &pack.evidence_requirements {
+        if !pack.required_evidence.contains(id) {
+            return Err(CompileError::Unknown(id.clone()));
+        }
+        requirement.value_schema.check(0, &mut 0)?;
+        if requirement.max_age_ms == Some(0) {
+            return Err(CompileError::Type(
+                "evidence max age must be positive".into(),
+            ));
+        }
+    }
     if pack.nodes.len() > 64 {
         return Err(CompileError::Limit("nodes"));
     }
@@ -227,7 +341,7 @@ pub fn compile(pack: DecisionPack) -> Result<CompiledDecisionGraph, CompileError
     {
         return Err(CompileError::Limit("sensitivity classes"));
     }
-    if pack.outputs.len() > 8 {
+    if pack.outputs.is_empty() || pack.outputs.len() > 8 {
         return Err(CompileError::Limit("outputs"));
     }
     if pack.limits.deadline_ms == 0 || pack.limits.max_billable_attempts > 2 {
@@ -247,10 +361,16 @@ pub fn compile(pack: DecisionPack) -> Result<CompiledDecisionGraph, CompileError
             {
                 return Err(CompileError::Type(o.id().into()));
             }
-            OutputDefinition::Ordinal { anchors, .. }
-                if anchors.len() < 2
-                    || anchors.len() > 32
-                    || anchors.iter().collect::<BTreeSet<_>>().len() != anchors.len() =>
+            OutputDefinition::Binary { proposition, .. } if proposition.trim().is_empty() => {
+                return Err(CompileError::Type(o.id().into()));
+            }
+            OutputDefinition::Ordinal {
+                scale_id, anchors, ..
+            } if scale_id.trim().is_empty()
+                || anchors.iter().any(|a| a.trim().is_empty())
+                || anchors.len() < 2
+                || anchors.len() > 32
+                || anchors.iter().collect::<BTreeSet<_>>().len() != anchors.len() =>
             {
                 return Err(CompileError::Type(o.id().into()));
             }
@@ -281,6 +401,8 @@ pub fn compile(pack: DecisionPack) -> Result<CompiledDecisionGraph, CompileError
             if !matches!(
                 pack.nodes[from].operation,
                 Operation::FactEquals { .. }
+                    | Operation::FactCompare { .. }
+                    | Operation::BooleanNot
                     | Operation::EvidencePresent { .. }
                     | Operation::BooleanAnd
                     | Operation::BooleanOr
@@ -293,6 +415,14 @@ pub fn compile(pack: DecisionPack) -> Result<CompiledDecisionGraph, CompileError
             edges += 1;
         }
         match &n.operation {
+            Operation::BooleanNot if n.depends_on.len() != 1 => {
+                return Err(CompileError::Type(n.id.clone()));
+            }
+            Operation::FactCompare { field, value, .. }
+                if field.is_empty() || !value.is_finite() || !n.depends_on.is_empty() =>
+            {
+                return Err(CompileError::Type(n.id.clone()));
+            }
             Operation::BooleanAnd | Operation::BooleanOr if n.depends_on.is_empty() => {
                 return Err(CompileError::Type(n.id.clone()));
             }
@@ -315,6 +445,17 @@ pub fn compile(pack: DecisionPack) -> Result<CompiledDecisionGraph, CompileError
                     return Err(CompileError::Duplicate(output.clone()));
                 }
                 semantics.push(i);
+            }
+            Operation::StateAnswer { output, field } => {
+                if field.is_empty() {
+                    return Err(CompileError::Type(n.id.clone()));
+                }
+                if !outputs.contains_key(output) {
+                    return Err(CompileError::Unknown(output.clone()));
+                }
+                if !producers.insert(output.clone()) {
+                    return Err(CompileError::Duplicate(output.clone()));
+                }
             }
             Operation::LiteralAnswer { output, answer } => {
                 let &idx = outputs
@@ -343,6 +484,8 @@ pub fn compile(pack: DecisionPack) -> Result<CompiledDecisionGraph, CompileError
         .hard_deny_nodes
         .iter()
         .chain(&pack.policy.accept_nodes)
+        .chain(&pack.policy.review_nodes)
+        .chain(&pack.policy.abstain_nodes)
     {
         let &idx = ids
             .get(id)
@@ -350,6 +493,8 @@ pub fn compile(pack: DecisionPack) -> Result<CompiledDecisionGraph, CompileError
         if !matches!(
             pack.nodes[idx].operation,
             Operation::FactEquals { .. }
+                | Operation::FactCompare { .. }
+                | Operation::BooleanNot
                 | Operation::EvidencePresent { .. }
                 | Operation::BooleanAnd
                 | Operation::BooleanOr
@@ -390,12 +535,21 @@ pub fn compile(pack: DecisionPack) -> Result<CompiledDecisionGraph, CompileError
         .filter_map(|(i, node)| {
             matches!(
                 node.operation,
-                Operation::SemanticQuestion { .. } | Operation::LiteralAnswer { .. }
+                Operation::SemanticQuestion { .. }
+                    | Operation::LiteralAnswer { .. }
+                    | Operation::StateAnswer { .. }
             )
             .then_some(i)
         })
         .chain(hard_deny_indices.iter().copied())
         .chain(accept_indices.iter().copied())
+        .chain(
+            pack.policy
+                .review_nodes
+                .iter()
+                .chain(&pack.policy.abstain_nodes)
+                .map(|id| ids[id]),
+        )
         .collect();
     while let Some(index) = pending.pop() {
         if !live[index] {
@@ -440,7 +594,10 @@ mod tests {
             kind: "DecisionPack".into(),
             id: "x".into(),
             version: "1".into(),
+            input_schema: None,
+            state_preparation: None,
             required_evidence: vec![],
+            evidence_requirements: BTreeMap::new(),
             permitted_provider_sensitivities: vec![],
             semantic_state_fields: vec![],
             outputs: vec![OutputDefinition::Binary {
@@ -466,6 +623,9 @@ mod tests {
                 },
             ],
             policy: Policy {
+                review_nodes: vec![],
+                abstain_nodes: vec![],
+                fallback: None,
                 hard_deny_nodes: vec![],
                 accept_nodes: vec![],
                 accept_deterministic: false,

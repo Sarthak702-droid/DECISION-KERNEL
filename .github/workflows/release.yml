@@ -1,0 +1,30 @@
+name: Candidate images
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  packages: write
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Compile locked release binaries
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          cargo build --workspace --release --locked
+      - name: Package immutable shell-free images
+        run: python3 scripts/package-images.py --prefix decision-kernel-candidate --output images.json
+      - name: Push candidate and retain registry digests
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          printf '%s' "$GH_TOKEN" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          python3 scripts/push-images.py images.json registry-images.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: candidate-images
+          path: registry-images.json
+# This builds a candidate only. Promote only after Tier 0–5 evidence, image smoke/
+# rollback drills and operator approval are bound to the exact commit + RepoDigests.

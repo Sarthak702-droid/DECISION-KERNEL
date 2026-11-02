@@ -22,50 +22,6 @@ async fn postgres_receipts_cache_and_budget_are_scoped() {
         return;
     };
     let pool = PgPool::connect(&url).await.unwrap();
-    sqlx::raw_sql(include_str!("../../../migrations/0001_init.sql"))
-        .execute(&pool)
-        .await
-        .unwrap();
-    sqlx::raw_sql(include_str!(
-        "../../../migrations/0002_prediction_cache.sql"
-    ))
-    .execute(&pool)
-    .await
-    .unwrap();
-    sqlx::raw_sql(include_str!("../../../migrations/0003_service_tokens.sql"))
-        .execute(&pool)
-        .await
-        .unwrap();
-    sqlx::raw_sql(include_str!("../../../migrations/0004_qualifications.sql"))
-        .execute(&pool)
-        .await
-        .unwrap();
-    sqlx::raw_sql(include_str!(
-        "../../../migrations/0006_qualification_review.sql"
-    ))
-    .execute(&pool)
-    .await
-    .unwrap();
-    sqlx::raw_sql(include_str!(
-        "../../../migrations/0007_reviews_outcomes.sql"
-    ))
-    .execute(&pool)
-    .await
-    .unwrap();
-    sqlx::raw_sql(include_str!(
-        "../../../migrations/0009_returned_model_qualification.sql"
-    ))
-    .execute(&pool)
-    .await
-    .unwrap();
-    sqlx::raw_sql(include_str!("../../../migrations/0010_tenant_rls.sql"))
-        .execute(&pool)
-        .await
-        .unwrap();
-    sqlx::raw_sql(include_str!("../../../migrations/0011_outbox.sql"))
-        .execute(&pool)
-        .await
-        .unwrap();
     let unique = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
@@ -76,14 +32,17 @@ async fn postgres_receipts_cache_and_budget_are_scoped() {
         environment: "test".into(),
         product_id: "product".into(),
     };
-    sqlx::query("INSERT INTO budget_buckets (tenant_id,project_id,purpose,cap_nano_usd) VALUES ($1,$2,'test',100)")
+    sqlx::query("INSERT INTO budget_buckets (tenant_id,project_id,environment,product_id,purpose,cap_nano_usd) VALUES ($1,$2,'test','product','test',100)")
         .bind(&scope.tenant_id).bind(&scope.project_id).execute(&pool).await.unwrap();
     let pack = DecisionPack {
         api_version: "kernel/v1".into(),
         kind: "DecisionPack".into(),
         id: "test".into(),
         version: "1".into(),
+        input_schema: None,
+        state_preparation: None,
         required_evidence: vec![],
+        evidence_requirements: BTreeMap::new(),
         permitted_provider_sensitivities: vec![],
         semantic_state_fields: vec!["case".into()],
         outputs: vec![OutputDefinition::Binary {
@@ -99,6 +58,9 @@ async fn postgres_receipts_cache_and_budget_are_scoped() {
             },
         }],
         policy: Policy {
+            review_nodes: vec![],
+            abstain_nodes: vec![],
+            fallback: None,
             hard_deny_nodes: vec![],
             accept_nodes: vec![],
             accept_deterministic: false,
@@ -142,6 +104,7 @@ async fn postgres_receipts_cache_and_budget_are_scoped() {
                 provider_id: "fixture".into(),
                 model_id: "fixture".into(),
                 reported_cost_nano_usd: None,
+                usage: None,
             },
         })),
         store: store.clone() as Arc<dyn ReceiptStore>,
@@ -211,7 +174,7 @@ async fn postgres_receipts_cache_and_budget_are_scoped() {
         tenant_id: format!("other-{unique}"),
         ..scope.clone()
     };
-    sqlx::query("INSERT INTO budget_buckets (tenant_id,project_id,purpose,cap_nano_usd) VALUES ($1,$2,'test',100)")
+    sqlx::query("INSERT INTO budget_buckets (tenant_id,project_id,environment,product_id,purpose,cap_nano_usd) VALUES ($1,$2,'test','product','test',100)")
         .bind(&other.tenant_id).bind(&other.project_id).execute(&pool).await.unwrap();
     for key in ["race-a", "race-b"] {
         assert!(matches!(
@@ -249,7 +212,7 @@ async fn postgres_receipts_cache_and_budget_are_scoped() {
         tenant_id: format!("recovery-{unique}"),
         ..scope.clone()
     };
-    sqlx::query("INSERT INTO budget_buckets (tenant_id,project_id,purpose,cap_nano_usd) VALUES ($1,$2,'test',100)")
+    sqlx::query("INSERT INTO budget_buckets (tenant_id,project_id,environment,product_id,purpose,cap_nano_usd) VALUES ($1,$2,'test','product','test',100)")
         .bind(&recovery.tenant_id).bind(&recovery.project_id).execute(&pool).await.unwrap();
     assert!(matches!(
         store.claim(&recovery, "recover", "digest").await.unwrap(),
@@ -279,14 +242,17 @@ async fn postgres_receipts_cache_and_budget_are_scoped() {
         tenant_id: format!("qualified-{unique}"),
         ..scope.clone()
     };
-    sqlx::query("INSERT INTO budget_buckets (tenant_id,project_id,purpose,cap_nano_usd) VALUES ($1,$2,'qualified',100)")
+    sqlx::query("INSERT INTO budget_buckets (tenant_id,project_id,environment,product_id,purpose,cap_nano_usd) VALUES ($1,$2,'test','product','qualified',100)")
         .bind(&qscope.tenant_id).bind(&qscope.project_id).execute(&pool).await.unwrap();
     let qpack = DecisionPack {
         api_version: "kernel/v1".into(),
         kind: "DecisionPack".into(),
         id: "qualified".into(),
         version: "1".into(),
+        input_schema: None,
+        state_preparation: None,
         required_evidence: vec![],
+        evidence_requirements: BTreeMap::new(),
         permitted_provider_sensitivities: vec![],
         semantic_state_fields: vec![],
         outputs: vec![OutputDefinition::Binary {
@@ -302,6 +268,9 @@ async fn postgres_receipts_cache_and_budget_are_scoped() {
             },
         }],
         policy: Policy {
+            review_nodes: vec![],
+            abstain_nodes: vec![],
+            fallback: None,
             hard_deny_nodes: vec![],
             accept_nodes: vec![],
             accept_deterministic: false,
@@ -351,6 +320,7 @@ async fn postgres_receipts_cache_and_budget_are_scoped() {
                 provider_id: "fixture".into(),
                 model_id: "fixture".into(),
                 reported_cost_nano_usd: None,
+                usage: None,
             },
         })),
         store: qstore.clone() as Arc<dyn ReceiptStore>,
@@ -607,7 +577,7 @@ async fn postgres_receipts_cache_and_budget_are_scoped() {
         .await
         .unwrap();
     assert_eq!(no_context, 0);
-    sqlx::query("SELECT set_config('kernel.tenant_id',$1,true),set_config('kernel.project_id',$2,true),set_config('kernel.environment',$3,true)")
+    sqlx::query("SELECT set_config('kernel.tenant_id',$1,true),set_config('kernel.project_id',$2,true),set_config('kernel.environment',$3,true),set_config('kernel.product_id','product',true)")
         .bind(&qscope.tenant_id).bind(&qscope.project_id).bind(&qscope.environment)
         .execute(&mut *rls_tx).await.unwrap();
     let own: i64 = sqlx::query_scalar("SELECT count(*) FROM evidence WHERE tenant_id=$1")
@@ -663,7 +633,8 @@ async fn postgres_receipts_cache_and_budget_are_scoped() {
             .load_evidence(&scope, &[("ev_tier".into(), 1)])
             .await
             .unwrap()
-            .is_empty()
+            .iter()
+            .all(|e| e.expires_at_unix_ms == Some(0))
     );
     assert!(
         runtime_store
